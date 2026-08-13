@@ -1,0 +1,191 @@
+import { LinearGradient } from "expo-linear-gradient";
+import { ReactNode, useState } from "react";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { colorPlater } from "../../theme/theme";
+
+type ScreenLayoutProps = {
+  children: ReactNode;
+};
+
+export default function ScreenLayout({ children }: ScreenLayoutProps) {
+  const [activeTab, setActiveTab] = useState("Admin Login");
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView>
+        <View style={styles.header}>
+          <LinearGradient
+            colors={colorPlater.gradient.HeaderBar as [string, string]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+          >
+            <View style={styles.headerTextView}>
+              <Text style={styles.textHeading}>
+                Care-Platform{" "}
+                <Text style={{ color: colorPlater.color.textWeb }}>Web</Text>
+              </Text>
+              <Text style={styles.textSubheading}>
+                Rehabilitation · H-Man / ReHandyBot
+              </Text>
+            </View>
+          </LinearGradient>
+        </View>
+
+        <View style={styles.tabsView}>
+          <Pressable
+            style={[
+              styles.tab,
+              activeTab === "Admin Login" && styles.activeTab,
+            ]}
+            onPress={() => setActiveTab("Admin Login")}
+          >
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === "Admin Login" && styles.activeTabText,
+              ]}
+            >
+              Admin Login
+            </Text>
+          </Pressable>
+
+          <Pressable
+            style={[
+              styles.tab,
+              activeTab === "First Time Setup" && styles.activeTab,
+            ]}
+            onPress={() => setActiveTab("First Time Setup")}
+          >
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === "First Time Setup" && styles.activeTabText,
+              ]}
+            >
+              First Time Setup
+            </Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.card}>
+          <View style={styles.cardView}>{children}</View>
+        </View>
+
+        <View style={styles.footerView}>
+          <Text style={styles.footerTextView}>Care-Platform Web</Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    //flex: 1,
+    backgroundColor: colorPlater.color.background,
+    width: "auto",
+    height: "auto",
+    flexShrink: 0,
+  },
+  header: {
+    width: "100%",
+    minWidth: 600,
+    height: 75,
+  },
+  headerTextView: {
+    paddingTop: 18,
+    paddingRight: 378.56,
+    paddingBottom: 18,
+    paddingLeft: 24,
+  },
+  textHeading: {
+    color: colorPlater.color.textCard,
+    fontFamily: "Roboto",
+    fontSize: 20,
+    fontStyle: "normal",
+    fontWeight: 700,
+    lineHeight: 24,
+    letterSpacing: 0.5,
+  },
+  textSubheading: {
+    color: colorPlater.color.textCard,
+    fontFamily: "Roboto",
+    fontSize: 12,
+    fontStyle: "normal",
+    fontWeight: 400,
+    lineHeight: 14.4,
+  },
+  tabsView: {
+    //flex: 1,
+    flexDirection: "row",
+    gap: 12,
+    paddingHorizontal: 16,
+    justifyContent: "center",
+    alignItems: "flex-start",
+    marginTop: 24,
+  },
+  tab: {
+    flex: 1,
+    maxWidth: 278,
+    maxHeight: 40,
+    paddingVertical: 11.5,
+    justifyContent: "center",
+    alignItems: "center",
+    flexShrink: 0,
+    backgroundColor: colorPlater.color.defaultBtn,
+    borderRadius: 10,
+  },
+  tabText: {
+    color: colorPlater.color.defaultBtnText,
+    textAlign: "center",
+    fontFamily: "Roboto",
+    fontSize: 14,
+    fontStyle: "normal",
+    fontWeight: 600,
+    lineHeight: 16.8,
+  },
+  activeTab: {
+    color: colorPlater.color.textCard,
+    backgroundColor: colorPlater.color.button,
+    boxShadow: "0 4px 12px 0 rgba(26, 78, 138, 0.30)",
+  },
+  activeTabText: {
+    color: colorPlater.color.textCard,
+  },
+
+  cardView: {
+    width: "90%",
+    maxWidth: 568,
+    minHeight: 460,
+
+    flexShrink: 0,
+    borderRadius: 12,
+    backgroundColor: colorPlater.color.textCard,
+    boxShadow: "0 2px 12px 0 rgba(15, 52, 96, 0.08)",
+
+    marginTop: 20,
+    marginBottom: 60,
+  },
+  card: {
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  footerTextView: {
+    flex: 1,
+    maxWidth: 600,
+    maxHeight: 54,
+    color: colorPlater.color.footer,
+    textAlign: "center",
+    fontFamily: "Roboto",
+    fontSize: 12,
+    fontStyle: "normal",
+    fontWeight: 400,
+    lineHeight: 14.4,
+    paddingVertical: 20,
+  },
+  footerView: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
