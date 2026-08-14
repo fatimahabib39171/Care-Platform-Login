@@ -7,6 +7,7 @@ import {
   TextInputProps,
   View,
 } from "react-native";
+import { Selection } from "./selection";
 
 type FormFieldProps = TextInputProps & {
   label: string;
@@ -14,6 +15,11 @@ type FormFieldProps = TextInputProps & {
   placeholderText?: string;
   hint?: string;
   error?: string;
+  selectItem?: boolean;
+  activeDropdown: string | null;
+  setActiveDropdown: React.Dispatch<React.SetStateAction<string | null>>;
+  dropdownId?: string;
+  options?: string[];
 };
 
 export default function FormField({
@@ -22,6 +28,13 @@ export default function FormField({
   placeholderText,
   hint,
   error,
+  selectItem = false,
+  activeDropdown,
+  setActiveDropdown,
+  dropdownId = "",
+
+  options = [],
+
   ...inputProps
 }: FormFieldProps) {
   return (
@@ -31,12 +44,23 @@ export default function FormField({
         {required && <Text style={styles.required}> *</Text>}
       </Text>
 
-      <TextInput
-        style={[styles.input, error && styles.inputError]}
-        placeholder={placeholderText}
-        placeholderTextColor={colorPlater.color.cardLabel}
-        {...inputProps}
-      />
+      {selectItem ? (
+        <Selection
+          options={options}
+          placeholder={placeholderText}
+          dropdownId={dropdownId}
+          activeDropdown={activeDropdown}
+          setActiveDropdown={setActiveDropdown}
+          error={error}
+        />
+      ) : (
+        <TextInput
+          style={[styles.input, error && styles.inputError]}
+          placeholder={placeholderText}
+          placeholderTextColor={colorPlater.color.cardLabel}
+          {...inputProps}
+        />
+      )}
       {error && <Text style={styles.error}>{error}</Text>}
     </View>
   );
@@ -66,7 +90,6 @@ const styles = StyleSheet.create({
     fontWeight: 600,
     lineHeight: 15.6,
   },
-
   input: {
     maxWidth: 520,
     minHeight: 43,

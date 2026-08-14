@@ -1,4 +1,5 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import CardHeading from "@/components/myui/CardHeading";
+import { ScrollView, StyleSheet, View } from "react-native";
 import FormField from "../../components/myui/FormField";
 import ProgressStepper from "../../components/myui/ProgressStepper";
 import ScreenLayout from "../../components/myui/ScreenLayout";
@@ -8,11 +9,13 @@ export default function SecurityQuestions() {
     <ScrollView>
       <ScreenLayout>
         <View style={styles.stepperView}>
-          <ProgressStepper currentStep={1} totalSteps={4} />
+          <ProgressStepper currentStep={3} totalSteps={4} />
         </View>
         <View style={styles.cardView}>
-          <Text>Security Questions</Text>
-          <Text>.</Text>
+          <CardHeading
+            heading="Security Questions"
+            subheading="Used to recover access if the password is forgotten."
+          />
 
           <FormField label="Hello" />
         </View>

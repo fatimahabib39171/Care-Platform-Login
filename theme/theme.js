@@ -17,6 +17,8 @@ export const colorPlater = {
     inputError: "#FDECEC",
     doneBtn: "#2E7D32",
     line: "#E2E9F2",
+    checkerBorder: "#CBD5E1",
+    backgroundCard: "#F8FAFC",
   },
 
   gradient: {
