@@ -12,7 +12,7 @@ import { Selection } from "./selection";
 type FormFieldProps = TextInputProps & {
   label: string;
   required?: boolean;
-  placeholderText?: string;
+  placeholderText: string;
   hint?: string;
   error?: string;
   selectItem?: boolean;
@@ -20,6 +20,7 @@ type FormFieldProps = TextInputProps & {
   setActiveDropdown: React.Dispatch<React.SetStateAction<string | null>>;
   dropdownId?: string;
   options?: string[];
+  onSelect?: (value: string) => void;
 };
 
 export default function FormField({
@@ -32,8 +33,8 @@ export default function FormField({
   activeDropdown,
   setActiveDropdown,
   dropdownId = "",
-
   options = [],
+  onSelect,
 
   ...inputProps
 }: FormFieldProps) {
@@ -52,6 +53,7 @@ export default function FormField({
           activeDropdown={activeDropdown}
           setActiveDropdown={setActiveDropdown}
           error={error}
+          onSelect={onSelect}
         />
       ) : (
         <TextInput

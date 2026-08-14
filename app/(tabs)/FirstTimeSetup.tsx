@@ -13,11 +13,55 @@ import {
 import FormField from "../../components/myui/FormField";
 import ProgressStepper from "../../components/myui/ProgressStepper";
 import ScreenLayout from "../../components/myui/ScreenLayout";
+import {
+  FormData,
+  FormErrors,
+  step1Validation,
+} from "../../utils/validation/step1Validation";
 
 export default function FirstTimeSetup() {
+  const [form, setForm] = useState<FormData>({
+    organisationName: "",
+    type: "",
+    timeZone: "",
+    address: "",
+    cityState: "",
+    postalCode: "",
+    country: "",
+    phone: "",
+    email: "",
+    description: "",
+  });
+
+  const [errors, setErrors] = useState<FormErrors>({});
+
   const { width } = useWindowDimensions();
   const isSmallScreen = width < 600;
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+
+  const updateField = (field: keyof FormData, value: string) => {
+    setForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [field]: undefined,
+    }));
+  };
+
+  const handleNext = () => {
+    const validationErrors = step1Validation(form);
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    router.push("/(tabs)/AdminUser");
+  };
+
   return (
     <ScrollView>
       <ScreenLayout>
@@ -34,9 +78,11 @@ export default function FirstTimeSetup() {
             label="Organisation Name "
             required={true}
             placeholderText="e.g. NUH Medical Centre,"
+            value={form.organisationName}
+            onChangeText={(text) => updateField("organisationName", text)}
+            error={errors.organisationName}
             activeDropdown={activeDropdown}
             setActiveDropdown={setActiveDropdown}
-            selectItem={false}
           />
           <View style={isSmallScreen ? styles.column : styles.row}>
             <View style={{ flex: 1 }}>
@@ -44,12 +90,14 @@ export default function FirstTimeSetup() {
                 label="Type "
                 required={true}
                 placeholderText="Select type..."
+                value={form.type}
+                onSelect={(value) => updateField("type", value)}
+                error={errors.type}
                 selectItem={true}
                 activeDropdown={activeDropdown}
                 setActiveDropdown={setActiveDropdown}
                 dropdownId="Type"
                 options={[
-                  "Select type...",
                   "Hospital",
                   "Clinic",
                   "Rehabilitation Centre",
@@ -65,6 +113,9 @@ export default function FirstTimeSetup() {
                 label="Time Zone "
                 required={true}
                 placeholderText="Select..."
+                value={form.timeZone}
+                onSelect={(value) => updateField("timeZone", value)}
+                error={errors.timeZone}
                 selectItem={true}
                 activeDropdown={activeDropdown}
                 setActiveDropdown={setActiveDropdown}
@@ -83,18 +134,21 @@ export default function FirstTimeSetup() {
             label="Address "
             required={true}
             placeholderText="Street address"
+            value={form.address}
+            onChangeText={(text) => updateField("address", text)}
+            error={errors.address}
             activeDropdown={activeDropdown}
             setActiveDropdown={setActiveDropdown}
-            selectItem={false}
           />
           <View style={isSmallScreen ? styles.column : styles.row}>
             <View style={{ flex: 1 }}>
               <FormField
                 label="City / State"
                 placeholderText="e.g. Lahore, Punjab"
+                value={form.cityState}
+                onChangeText={(text) => updateField("cityState", text)}
                 activeDropdown={activeDropdown}
                 setActiveDropdown={setActiveDropdown}
-                selectItem={false}
               />
             </View>
 
@@ -104,9 +158,11 @@ export default function FirstTimeSetup() {
                 required={true}
                 placeholderText="e.g. 54000"
                 keyboardType="number-pad"
+                value={form.postalCode}
+                onChangeText={(text) => updateField("postalCode", text)}
+                error={errors.postalCode}
                 activeDropdown={activeDropdown}
                 setActiveDropdown={setActiveDropdown}
-                selectItem={false}
               />
             </View>
           </View>
@@ -117,9 +173,11 @@ export default function FirstTimeSetup() {
                 label="Country "
                 required={true}
                 placeholderText="e.g. Pakistan"
+                value={form.country}
+                onChangeText={(text) => updateField("country", text)}
+                error={errors.country}
                 activeDropdown={activeDropdown}
                 setActiveDropdown={setActiveDropdown}
-                selectItem={false}
               />
             </View>
 
@@ -129,7 +187,9 @@ export default function FirstTimeSetup() {
                 required={true}
                 placeholderText="+92 3xx xxxxxxx"
                 keyboardType="phone-pad"
-                selectItem={false}
+                value={form.phone}
+                onChangeText={(text) => updateField("phone", text)}
+                error={errors.phone}
                 activeDropdown={activeDropdown}
                 setActiveDropdown={setActiveDropdown}
               />
@@ -140,24 +200,24 @@ export default function FirstTimeSetup() {
             required={true}
             placeholderText="org@example.com"
             keyboardType="email-address"
+            value={form.email}
+            onChangeText={(text) => updateField("email", text)}
+            error={errors.email}
             activeDropdown={activeDropdown}
             setActiveDropdown={setActiveDropdown}
-            selectItem={false}
           />
 
           <FormField
             label="Description"
             placeholderText="Option - short description"
             multiline={true}
+            value={form.description}
+            onChangeText={(text) => updateField("description", text)}
             activeDropdown={activeDropdown}
             setActiveDropdown={setActiveDropdown}
-            selectItem={false}
           />
 
-          <Pressable
-            style={styles.button}
-            onPress={() => router.push("/(tabs)/AdminUser")}
-          >
+          <Pressable style={styles.button} onPress={handleNext}>
             <Text style={styles.btnText}>Next: Admin User →</Text>
           </Pressable>
         </View>
