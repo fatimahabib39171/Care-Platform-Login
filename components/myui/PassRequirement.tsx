@@ -1,4 +1,4 @@
-import { colorPlater } from "@/theme/theme";
+import { colorPlater, font } from "@/theme/theme";
 import { StyleSheet, Text, TextInputProps, View } from "react-native";
 
 type passRequirProps = TextInputProps & {
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   },
   checkText: {
     color: colorPlater.color.textCard,
-    fontFamily: "Roboto",
+    fontFamily: font.family,
     fontSize: 9.32,
     fontStyle: "normal",
     fontWeight: 400,
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
 
   text: {
     color: colorPlater.color.showbutton,
-    fontFamily: "Roboto",
+    fontFamily: font.family,
     fontSize: 12,
     fontStyle: "normal",
     fontWeight: 400,

@@ -1,5 +1,5 @@
 import CardHeading from "@/components/myui/CardHeading";
-import { colorPlater } from "@/theme/theme";
+import { colorPlater, font } from "@/theme/theme";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -232,6 +232,7 @@ const styles = StyleSheet.create({
   },
   cardView: {
     paddingHorizontal: 24,
+    paddingBottom: 24,
   },
   button: {
     flex: 1,
@@ -246,7 +247,7 @@ const styles = StyleSheet.create({
   btnText: {
     color: colorPlater.color.textCard,
     textAlign: "center",
-    fontFamily: "Roboto",
+    fontFamily: font.family,
     fontSize: 15,
     fontStyle: "normal",
     fontWeight: 700,

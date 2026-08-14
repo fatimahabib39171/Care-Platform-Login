@@ -25,3 +25,7 @@ export const colorPlater = {
     HeaderBar: ["#0F3460", "#1A4E8A"],
   },
 };
+
+export const font = {
+  family: "Roboto",
+};

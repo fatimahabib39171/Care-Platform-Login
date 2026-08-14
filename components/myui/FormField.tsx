@@ -1,4 +1,4 @@
-import { colorPlater } from "@/theme/theme";
+import { colorPlater, font } from "@/theme/theme";
 import React from "react";
 import {
   StyleSheet,
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
 */
   label: {
     color: colorPlater.color.cardLabel,
-    fontFamily: "Roboto",
+    fontFamily: font.family,
     fontSize: 13,
     fontStyle: "normal",
     fontWeight: 600,
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   required: {
     width: 5.06,
     color: colorPlater.color.cardRequired,
-    fontFamily: "Roboto",
+    fontFamily: font.family,
     fontSize: 10.96,
     fontStyle: "normal",
     fontWeight: 600,
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
 
   error: {
     color: colorPlater.color.cardRequired,
-    fontFamily: "Roboto",
+    fontFamily: font.family,
     fontSize: 12,
     fontStyle: "normal",
     fontWeight: 500,

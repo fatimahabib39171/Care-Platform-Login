@@ -1,4 +1,4 @@
-import { colorPlater } from "@/theme/theme";
+import { colorPlater, font } from "@/theme/theme";
 import { StyleSheet, Text, TextInputProps, View } from "react-native";
 
 type HeadingProps = TextInputProps & {
@@ -22,7 +22,7 @@ export default function CardHeading({
 const styles = StyleSheet.create({
   cardHeading: {
     color: colorPlater.color.Primary,
-    fontFamily: "Roboto",
+    fontFamily: font.family,
     fontSize: 17,
     fontStyle: "normal",
     fontWeight: 700,
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
   },
   cardSubheading: {
     color: colorPlater.color.footer,
-    fontFamily: "Roboto",
+    fontFamily: font.family,
     fontSize: 13,
     fontStyle: "normal",
     fontWeight: 400,

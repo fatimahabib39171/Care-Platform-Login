@@ -2,7 +2,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { ReactNode, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { colorPlater } from "../../theme/theme";
+import { colorPlater, font } from "../../theme/theme";
 
 type ScreenLayoutProps = {
   children: ReactNode;
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   },
   textHeading: {
     color: colorPlater.color.textCard,
-    fontFamily: "Roboto",
+    fontFamily: font.family,
     fontSize: 20,
     fontStyle: "normal",
     fontWeight: 700,
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   },
   textSubheading: {
     color: colorPlater.color.textCard,
-    fontFamily: "Roboto",
+    fontFamily: font.family,
     fontSize: 12,
     fontStyle: "normal",
     fontWeight: 400,
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
   tabText: {
     color: colorPlater.color.defaultBtnText,
     textAlign: "center",
-    fontFamily: "Roboto",
+    fontFamily: font.family,
     fontSize: 14,
     fontStyle: "normal",
     fontWeight: 600,
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     maxHeight: 54,
     color: colorPlater.color.footer,
     textAlign: "center",
-    fontFamily: "Roboto",
+    fontFamily: font.family,
     fontSize: 12,
     fontStyle: "normal",
     fontWeight: 400,

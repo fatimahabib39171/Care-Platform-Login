@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     color: colorPlater.color.cardRequired,
     fontSize: 12,
     marginBottom: 17,
-    // fontFamily: "Roboto",
+    // fontFamily: font.family,
     // fontStyle: "normal",
     // fontWeight: 500,
     // lineHeight: 14.4,

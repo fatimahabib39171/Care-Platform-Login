@@ -1,7 +1,8 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { router } from "expo-router";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import ProgressStepper from "../../components/myui/ProgressStepper";
 import ScreenLayout from "../../components/myui/ScreenLayout";
-
+import { colorPlater, font } from "../../theme/theme";
 export default function SetupComplete() {
   return (
     <ScrollView>
@@ -9,8 +10,26 @@ export default function SetupComplete() {
         <View style={styles.stepperView}>
           <ProgressStepper currentStep={5} totalSteps={4} />
         </View>
-        <View style={styles.cardView}>
-          <Text>Setup Complete</Text>
+        <View>
+          <View style={styles.cardView}>
+            <View style={styles.container}>
+              <View style={styles.isDone}>
+                <Text style={styles.isDoneText}>✓</Text>
+              </View>
+            </View>
+            <Text style={styles.complete}>Setup Complete!</Text>
+            <Text style={styles.readyText}>
+              Your organisation and admin account are ready. You can now sign
+              in.
+            </Text>
+
+            <Pressable
+              style={styles.button}
+              onPress={() => router.navigate("/(tabs)")}
+            >
+              <Text style={styles.btnText}>Go to Login</Text>
+            </Pressable>
+          </View>
         </View>
       </ScreenLayout>
     </ScrollView>
@@ -23,5 +42,68 @@ const styles = StyleSheet.create({
   },
   cardView: {
     paddingHorizontal: 24,
+    paddingBottom: 24,
+  },
+  container: {
+    alignSelf: "center",
+    marginTop: 20,
+  },
+  isDone: {
+    width: 72,
+    height: 72,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 36,
+    backgroundColor: colorPlater.color.doneBtn,
+    marginBottom: 16,
+  },
+  isDoneText: {
+    color: colorPlater.color.textCard,
+    fontFamily: font.family,
+    textAlign: "center",
+    fontSize: 36,
+    fontStyle: "normal",
+    fontWeight: 400,
+    lineHeight: 12,
+  },
+  complete: {
+    color: colorPlater.color.doneBtn,
+    textAlign: "center",
+    fontFamily: font.family,
+    fontSize: 24,
+    fontStyle: "normal",
+    fontWeight: 700,
+    lineHeight: 28.8,
+    marginBottom: 8,
+  },
+  readyText: {
+    color: colorPlater.color.defaultBtnText,
+    textAlign: "center",
+    fontFamily: font.family,
+    fontSize: 14,
+    fontStyle: "normal",
+    fontWeight: 400,
+    lineHeight: 16.8,
+    marginBottom: 23,
+  },
+
+  button: {
+    flex: 1,
+    maxWidth: 520,
+    minHeight: 45,
+    paddingVertical: 13.5,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+    backgroundColor: colorPlater.color.button,
+  },
+  btnText: {
+    color: colorPlater.color.textCard,
+    textAlign: "center",
+    fontFamily: font.family,
+    fontSize: 15,
+    fontStyle: "normal",
+    fontWeight: 700,
+    lineHeight: 18,
   },
 });

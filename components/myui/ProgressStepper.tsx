@@ -1,4 +1,4 @@
-import { colorPlater } from "@/theme/theme";
+import { colorPlater, font } from "@/theme/theme";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
 
   check: {
     color: colorPlater.color.textCard,
-    fontFamily: "Roboto",
+    fontFamily: font.family,
     fontSize: 11.47,
     fontStyle: "normal",
     fontWeight: 700,

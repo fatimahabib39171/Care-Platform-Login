@@ -1,4 +1,4 @@
-import { colorPlater } from "@/theme/theme";
+import { colorPlater, font } from "@/theme/theme";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -11,10 +11,46 @@ import {
 } from "react-native";
 import FormField from "../../components/myui/FormField";
 import ScreenLayout from "../../components/myui/ScreenLayout";
+import {
+  FormData,
+  FormErrors,
+  mainValidation,
+} from "../../utils/validation/mainValidation";
 
 export default function App() {
   const [showPass, setShowPass] = useState(false);
   const [checked, setChecked] = useState(false);
+
+  const [form, setForm] = useState({
+    organisationName: "",
+    username: "",
+    password: "",
+  });
+
+  const [errors, setErrors] = useState<FormErrors>({});
+
+  const updateField = (field: keyof FormData, value: string) => {
+    setForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [field]: undefined,
+    }));
+  };
+
+  const handleNext = () => {
+    const validationErrors = mainValidation(form);
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    Alert.alert("Login successfully!");
+  };
 
   return (
     <View style={styles.container}>
@@ -30,21 +66,33 @@ export default function App() {
               label="Organisation Name "
               required={true}
               placeholderText="e.g. NUH Medical Centre"
-              error="Organisation name is required."
+              value={form.organisationName}
+              onChangeText={(text) => updateField("organisationName", text)}
+              error={errors.organisationName}
+              activeDropdown={null}
+              setActiveDropdown={() => {}}
             />
 
             <FormField
               label="Username "
               required={true}
               placeholderText="Enter your username"
-              error="Username is required."
+              value={form.username}
+              onChangeText={(text) => updateField("username", text)}
+              error={errors.username}
+              activeDropdown={null}
+              setActiveDropdown={() => {}}
             />
 
             <FormField
               label="Password "
               required={true}
               placeholderText="Enter your password"
-              error="Password is required."
+              value={form.password}
+              onChangeText={(text) => updateField("password", text)}
+              error={errors.password}
+              activeDropdown={null}
+              setActiveDropdown={() => {}}
             />
 
             <Pressable
@@ -57,10 +105,7 @@ export default function App() {
               <Text style={styles.rmbtn}>Remember me</Text>
             </Pressable>
 
-            <Pressable
-              style={styles.button}
-              onPress={() => Alert.alert("Sign In Button")}
-            >
+            <Pressable style={styles.button} onPress={handleNext}>
               <Text style={styles.btnText}>Sign In</Text>
             </Pressable>
 
@@ -95,10 +140,11 @@ const styles = StyleSheet.create({
 
   cardView: {
     paddingHorizontal: 24,
+    paddingBottom: 24,
   },
   cardHeading: {
     color: colorPlater.color.Primary,
-    fontFamily: "Roboto",
+    fontFamily: font.family,
     fontSize: 20,
     fontStyle: "normal",
     fontWeight: 700,
@@ -108,7 +154,7 @@ const styles = StyleSheet.create({
   },
   cardSubheading: {
     color: colorPlater.color.footer,
-    fontFamily: "Roboto",
+    fontFamily: font.family,
     fontSize: 13,
     fontStyle: "normal",
     fontWeight: 400,
@@ -150,7 +196,7 @@ const styles = StyleSheet.create({
   },
   rmbtn: {
     color: colorPlater.color.cardLabel,
-    fontFamily: "Roboto",
+    fontFamily: font.family,
     fontSize: 13,
     fontStyle: "normal",
     fontWeight: 600,
@@ -172,7 +218,7 @@ const styles = StyleSheet.create({
   btnText: {
     color: colorPlater.color.textCard,
     textAlign: "center",
-    fontFamily: "Roboto",
+    fontFamily: font.family,
     fontSize: 15,
     fontStyle: "normal",
     fontWeight: 700,
@@ -183,12 +229,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   forgotBtn: {
-    marginBottom: 23,
     marginTop: 14,
   },
   forgotText: {
     color: colorPlater.color.button,
-    fontFamily: "Roboto",
+    fontFamily: font.family,
     fontSize: 13,
     fontStyle: "normal",
     fontWeight: 600,

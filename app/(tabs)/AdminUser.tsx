@@ -1,4 +1,4 @@
-import { colorPlater } from "@/theme/theme";
+import { colorPlater, font } from "@/theme/theme";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -49,7 +49,7 @@ export default function AdminUser() {
       return;
     }
 
-    router.push("/(tabs)/SecurityQuestions");
+    router.navigate("/(tabs)/SecurityQuestions");
   };
 
   return (
@@ -215,6 +215,7 @@ const styles = StyleSheet.create({
 
   cardView: {
     paddingHorizontal: 24,
+    paddingBottom: 24,
   },
   passRequirCard: {
     minWidth: 226,
@@ -235,19 +236,18 @@ const styles = StyleSheet.create({
     flex: 1,
     width: 114,
     minHeight: 18,
+
     padding: 14,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
     backgroundColor: colorPlater.color.button,
-    gap: 8,
-    marginRight: 136,
-    marginLeft: 290,
+    //gap: 8,
   },
   nextBtnText: {
     color: colorPlater.color.textCard,
     textAlign: "center",
-    fontFamily: "Roboto",
+    fontFamily: font.family,
     fontSize: 15,
     fontStyle: "normal",
     fontWeight: 700,
@@ -255,22 +255,29 @@ const styles = StyleSheet.create({
   },
   backButton: {
     flex: 1,
-    width: 53,
-    minHeight: 18,
-    maxHeight: 46,
+    width: 81,
+    minHeight: 46,
     justifyContent: "center",
     alignItems: "center",
-    gap: 8,
+    //gap: 8,
     borderRadius: 10,
     backgroundColor: colorPlater.color.defaultBtn,
     padding: 14,
   },
-  backBtnText: {},
+  backBtnText: {
+    color: colorPlater.color.Primary,
+    textAlign: "center",
+    fontFamily: font.family,
+    fontSize: 15,
+    fontStyle: "normal",
+    fontWeight: 700,
+    lineHeight: 18,
+  },
   rowBtns: {
+    height: 45,
+    alignItems: "flex-end",
     flexDirection: "row",
-    marginBottom: 23,
-
-    backgroundColor: "red",
+    gap: 12,
   },
   row: {
     flexDirection: "row",
