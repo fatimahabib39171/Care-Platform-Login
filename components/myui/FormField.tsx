@@ -1,6 +1,7 @@
 import { colorPlater, font } from "@/theme/theme";
-import React from "react";
+import React, { useState } from "react";
 import {
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -38,6 +39,9 @@ export default function FormField({
 
   ...inputProps
 }: FormFieldProps) {
+  const [showPass, setShowPass] = useState(false);
+  const isPassword = inputProps.secureTextEntry === true;
+
   return (
     <View>
       <Text style={styles.label}>
@@ -56,12 +60,26 @@ export default function FormField({
           onSelect={onSelect}
         />
       ) : (
-        <TextInput
-          style={[styles.input, error && styles.inputError]}
-          placeholder={placeholderText}
-          placeholderTextColor={colorPlater.color.cardLabel}
-          {...inputProps}
-        />
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={[styles.input, error && styles.inputError]}
+            placeholder={placeholderText}
+            placeholderTextColor={colorPlater.color.cardLabel}
+            {...inputProps}
+            secureTextEntry={isPassword ? !showPass : false}
+          />
+
+          {isPassword && (
+            <Pressable
+              style={styles.showBtn}
+              onPress={() => setShowPass(!showPass)}
+            >
+              <Text style={styles.showBtnText}>
+                {showPass ? "HIDE" : "SHOW"}
+              </Text>
+            </Pressable>
+          )}
+        </View>
       )}
       {error && <Text style={styles.error}>{error}</Text>}
     </View>
@@ -81,6 +99,10 @@ const styles = StyleSheet.create({
     fontWeight: 600,
     lineHeight: 15.6,
     marginBottom: 5,
+  },
+
+  inputContainer: {
+    position: "relative",
   },
 
   required: {
@@ -140,5 +162,22 @@ const styles = StyleSheet.create({
     fontWeight: 500,
     lineHeight: 14.4,
     marginBottom: 17,
+  },
+
+  showBtnText: {
+    color: colorPlater.color.showbutton,
+    textAlign: "center",
+    fontFamily: font.family,
+    fontSize: 11,
+    fontStyle: "normal",
+    fontWeight: 400,
+    lineHeight: 13.2,
+  },
+  showBtn: {
+    position: "absolute",
+    paddingLeft: 4,
+    top: 17,
+    right: 16,
+    //borderWidth: 1,
   },
 });

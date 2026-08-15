@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   cardView: {
     width: "90%",
     maxWidth: 568,
-    minHeight: 460,
+    minHeight: 347,
 
     flexShrink: 0,
     borderRadius: 12,

@@ -93,6 +93,7 @@ export default function App() {
               error={errors.password}
               activeDropdown={null}
               setActiveDropdown={() => {}}
+              secureTextEntry={true}
             />
 
             <Pressable
