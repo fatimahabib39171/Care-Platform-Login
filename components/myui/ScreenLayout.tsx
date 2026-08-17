@@ -9,12 +9,27 @@ type ScreenLayoutProps = {
   children: ReactNode;
 };
 
+let lastSetupStep:
+  | "/FirstTimeSetup"
+  | "/AdminUser"
+  | "/SecurityQuestions"
+  | "/SetupComplete" = "/FirstTimeSetup";
+
 export default function ScreenLayout({ children }: ScreenLayoutProps) {
   const pathname = usePathname();
 
+  console.log("PATH:", pathname);
   const isSignInActive = pathname === "/" || pathname === "/index";
 
-  const isFirstTimeSetupActive = pathname === "/FirstTimeSetup";
+  const isFirstTimeSetupActive =
+    pathname === "/FirstTimeSetup" ||
+    pathname === "/AdminUser" ||
+    pathname === "/SecurityQuestions" ||
+    pathname === "/SetupComplete";
+
+  if (isFirstTimeSetupActive) {
+    lastSetupStep = pathname;
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -54,7 +69,7 @@ export default function ScreenLayout({ children }: ScreenLayoutProps) {
           <Pressable
             style={[styles.tab, isFirstTimeSetupActive && styles.activeTab]}
             onPress={() => {
-              router.navigate("/(tabs)/FirstTimeSetup");
+              router.navigate(lastSetupStep);
             }}
           >
             <Text
