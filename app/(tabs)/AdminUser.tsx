@@ -111,7 +111,7 @@ export default function AdminUser() {
                   placeholderText="First name"
                   value={form.firstName}
                   onChangeText={(text) => {
-                    if (!/^[a-zA-Z]+$/.test(text)) {
+                    if (!/^[a-zA-Z]*$/.test(text)) {
                       setErrors((prev) => ({
                         ...prev,
                         firstName: "First name must contain letters only.",
@@ -132,7 +132,7 @@ export default function AdminUser() {
                   placeholderText="Last name"
                   value={form.lastName}
                   onChangeText={(text) => {
-                    if (!/^[a-zA-Z]+$/.test(text)) {
+                    if (!/^[a-zA-Z]*$/.test(text)) {
                       setErrors((prev) => ({
                         ...prev,
                         lastName: "Last name must contain letters only.",

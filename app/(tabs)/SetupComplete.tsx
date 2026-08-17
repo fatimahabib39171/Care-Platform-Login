@@ -58,16 +58,16 @@ export default function SetupComplete() {
 }
 const styles = StyleSheet.create({
   stepperView: {
-    marginVertical: 16,
-    marginHorizontal: 73,
+    paddingVertical: 16,
+    paddingHorizontal: 73,
   },
   cardView: {
     paddingHorizontal: 24,
-    paddingBottom: 24,
+    //paddingBottom: 24,
   },
   container: {
     alignSelf: "center",
-    marginTop: 20,
+    marginTop: 40,
   },
   isDone: {
     width: 72,
@@ -76,7 +76,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 36,
     backgroundColor: colorPlater.color.doneBtn,
-    marginBottom: 16,
   },
   isDoneText: {
     color: colorPlater.color.textCard,
@@ -95,7 +94,8 @@ const styles = StyleSheet.create({
     fontStyle: "normal",
     fontWeight: 700,
     lineHeight: 28.8,
-    marginBottom: 8,
+    marginBottom: 7,
+    marginTop: 16,
   },
   readyText: {
     color: colorPlater.color.defaultBtnText,
@@ -117,6 +117,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 10,
     backgroundColor: colorPlater.color.button,
+    marginBottom: 40,
   },
   btnText: {
     color: colorPlater.color.textCard,
