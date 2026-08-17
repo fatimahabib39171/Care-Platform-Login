@@ -40,14 +40,15 @@ export default function FirstTimeSetup() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   const updateField = (field: keyof FormData, value: string) => {
-    setForm((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    const updateForm = { ...form, [field]: value };
+
+    setForm(updateForm);
+
+    const validtionsErrors = step1Validation(updateForm);
 
     setErrors((prev) => ({
       ...prev,
-      [field]: undefined,
+      [field as keyof FormErrors]: validtionsErrors[field as keyof FormErrors],
     }));
   };
 
@@ -79,6 +80,7 @@ export default function FirstTimeSetup() {
             required={true}
             placeholderText="e.g. NUH Medical Centre,"
             value={form.organisationName}
+            keyboardType="default"
             onChangeText={(text) => updateField("organisationName", text)}
             error={errors.organisationName}
             activeDropdown={activeDropdown}
@@ -157,7 +159,7 @@ export default function FirstTimeSetup() {
                 label="Postal Code "
                 required={true}
                 placeholderText="e.g. 54000"
-                keyboardType="number-pad"
+                keyboardType="default"
                 value={form.postalCode}
                 onChangeText={(text) => updateField("postalCode", text)}
                 error={errors.postalCode}

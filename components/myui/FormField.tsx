@@ -1,5 +1,5 @@
 import { colorPlater, font } from "@/theme/theme";
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import {
   Pressable,
   StyleSheet,
@@ -22,6 +22,7 @@ type FormFieldProps = TextInputProps & {
   dropdownId?: string;
   options?: string[];
   onSelect?: (value: string) => void;
+  belowInput?: ReactNode;
 };
 
 export default function FormField({
@@ -36,6 +37,7 @@ export default function FormField({
   dropdownId = "",
   options = [],
   onSelect,
+  belowInput,
 
   ...inputProps
 }: FormFieldProps) {
@@ -79,6 +81,11 @@ export default function FormField({
               </Text>
             </Pressable>
           )}
+        </View>
+      )}
+      {belowInput && (
+        <View style={error ? styles.belowInputError : styles.belowInput}>
+          {belowInput}
         </View>
       )}
       {error && <Text style={styles.error}>{error}</Text>}
@@ -153,6 +160,14 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
 */
+  belowInput: {
+    marginTop: -13,
+    marginBottom: 16,
+  },
+  belowInputError: {
+    marginTop: -1,
+    marginBottom: 3,
+  },
 
   error: {
     color: colorPlater.color.cardRequired,

@@ -30,14 +30,15 @@ export default function App() {
   const [errors, setErrors] = useState<FormErrors>({});
 
   const updateField = (field: keyof FormData, value: string) => {
-    setForm((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    const updateForm = { ...form, [field]: value };
+
+    setForm(updateForm);
+
+    const validtionsErrors = mainValidation(updateForm);
 
     setErrors((prev) => ({
       ...prev,
-      [field]: undefined,
+      [field as keyof FormErrors]: validtionsErrors[field as keyof FormErrors],
     }));
   };
 
@@ -151,7 +152,8 @@ const styles = StyleSheet.create({
     fontWeight: 700,
     lineHeight: 24,
 
-    paddingTop: 20,
+    marginTop: 20,
+    marginBottom: 3,
   },
   cardSubheading: {
     color: colorPlater.color.footer,

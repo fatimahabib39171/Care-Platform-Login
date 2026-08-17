@@ -1,4 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 import { ReactNode, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -37,7 +38,10 @@ export default function ScreenLayout({ children }: ScreenLayoutProps) {
               styles.tab,
               activeTab === "Admin Login" && styles.activeTab,
             ]}
-            onPress={() => setActiveTab("Admin Login")}
+            onPress={() => {
+              router.navigate("/(tabs)");
+              setActiveTab("Admin Login");
+            }}
           >
             <Text
               style={[
@@ -54,7 +58,10 @@ export default function ScreenLayout({ children }: ScreenLayoutProps) {
               styles.tab,
               activeTab === "First Time Setup" && styles.activeTab,
             ]}
-            onPress={() => setActiveTab("First Time Setup")}
+            onPress={() => {
+              router.navigate("/(tabs)/FirstTimeSetup");
+              setActiveTab("First Time Setup");
+            }}
           >
             <Text
               style={[
@@ -106,6 +113,7 @@ const styles = StyleSheet.create({
     fontWeight: 700,
     lineHeight: 24,
     letterSpacing: 0.5,
+    marginBottom: 1,
   },
   textSubheading: {
     color: colorPlater.color.textCard,

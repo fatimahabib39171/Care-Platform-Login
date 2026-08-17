@@ -24,8 +24,16 @@ export default function SecurityQuestions() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   const updateField = (field: keyof FormData, value: string) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-    setErrors((prev) => ({ ...prev, [field]: undefined }));
+    const updateForm = { ...form, [field]: value };
+
+    setForm(updateForm);
+
+    const validtionsErrors = step3Validation(updateForm);
+
+    setErrors((prev) => ({
+      ...prev,
+      [field as keyof FormErrors]: validtionsErrors[field as keyof FormErrors],
+    }));
   };
 
   const handleNext = () => {

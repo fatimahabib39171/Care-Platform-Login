@@ -23,8 +23,6 @@ export function mainValidation(form: FormData): FormErrors {
 
   if (!form.password.trim()) {
     errors.password = "Password is required.";
-  } else if (form.password.length < 8) {
-    errors.password = "Password must be at least 8 characters";
   }
 
   return errors;

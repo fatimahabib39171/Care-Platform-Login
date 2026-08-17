@@ -37,8 +37,25 @@ export default function AdminUser() {
   const [errors, setErrors] = useState<FormErrors>({});
 
   const updateField = (field: keyof FormData, value: string) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-    setErrors((prev) => ({ ...prev, [field]: undefined }));
+    const updateForm = { ...form, [field]: value };
+
+    setForm(updateForm);
+
+    const validtionsErrors = step2Validation(updateForm);
+
+    setErrors((prev) => ({
+      ...prev,
+      [field as keyof FormErrors]: validtionsErrors[field as keyof FormErrors],
+    }));
+  };
+
+  const password = form.password;
+  const passwordRequirement = {
+    minLength: password.length >= 8,
+    lowerCase: /[a-z]/.test(password),
+    upperCase: /[A-Z]/.test(password),
+    number: /[0-9]/.test(password),
+    symbol: /[!@#$%^&*(),.?":{}|<>_\-[\]\\\/]/.test(password),
   };
 
   const handleNext = () => {
@@ -70,7 +87,16 @@ export default function AdminUser() {
                 required={true}
                 placeholderText="First name"
                 value={form.firstName}
-                onChangeText={(text) => updateField("firstName", text)}
+                onChangeText={(text) => {
+                  if (!/^[a-zA-Z]+$/.test(text)) {
+                    setErrors((prev) => ({
+                      ...prev,
+                      firstName: "First name must contain letters only.",
+                    }));
+                    return;
+                  }
+                  updateField("firstName", text);
+                }}
                 error={errors.firstName}
                 activeDropdown={null}
                 setActiveDropdown={() => {}}
@@ -82,7 +108,16 @@ export default function AdminUser() {
                 required={true}
                 placeholderText="Last name"
                 value={form.lastName}
-                onChangeText={(text) => updateField("lastName", text)}
+                onChangeText={(text) => {
+                  if (!/^[a-zA-Z]+$/.test(text)) {
+                    setErrors((prev) => ({
+                      ...prev,
+                      lirstName: "Last name must contain letters only.",
+                    }));
+                    return;
+                  }
+                  updateField("lastName", text);
+                }}
                 error={errors.lastName}
                 activeDropdown={null}
                 setActiveDropdown={() => {}}
@@ -98,6 +133,9 @@ export default function AdminUser() {
             error={errors.username}
             activeDropdown={null}
             setActiveDropdown={() => {}}
+            belowInput={
+              <Text style={styles.usernameHint}>Used for admin login</Text>
+            }
           />
 
           <View style={isSmallScreen ? styles.column : styles.row}>
@@ -120,7 +158,18 @@ export default function AdminUser() {
                 placeholderText="+92 3xx xxxxxxx"
                 keyboardType="phone-pad"
                 value={form.phone}
-                onChangeText={(text) => updateField("phone", text)}
+                onChangeText={(text) => {
+                  if (!/^\+?[0-9()]*$/.test(text)) {
+                    setErrors((prev) => ({
+                      ...prev,
+                      phone:
+                        "Phone number can contain +, (, ) and digits only.",
+                    }));
+                    return;
+                  }
+
+                  updateField("phone", text);
+                }}
                 error={errors.phone}
                 activeDropdown={null}
                 setActiveDropdown={() => {}}
@@ -138,13 +187,7 @@ export default function AdminUser() {
           />
 
           <View style={isSmallScreen ? styles.column : styles.row}>
-            <View
-              style={{
-                flex: 1,
-                flexDirection: "column",
-                backgroundColor: "red",
-              }}
-            >
+            <View style={styles.passwordSection}>
               <FormField
                 label="Password "
                 required={true}
@@ -155,28 +198,35 @@ export default function AdminUser() {
                 error={errors.password}
                 activeDropdown={null}
                 setActiveDropdown={() => {}}
+                belowInput={
+                  <View style={styles.passRequirCard}>
+                    <PassRequirement
+                      label="At least 8 characters"
+                      checked={passwordRequirement.minLength}
+                    />
+                    <PassRequirement
+                      label="At least one lowercase letter"
+                      checked={passwordRequirement.lowerCase}
+                    />
+                    <PassRequirement
+                      label="At least one uppercase letter"
+                      checked={passwordRequirement.upperCase}
+                    />
+                    <PassRequirement
+                      label="At least one number"
+                      checked={passwordRequirement.number}
+                    />
+                    <PassRequirement
+                      label="At least one symbol (e.g. !@#$)"
+                      checked={passwordRequirement.symbol}
+                    />
+                  </View>
+                }
               />
-              <View style={styles.passRequirCard}>
-                <PassRequirement label="At least 8 characters" checked={true} />
-                <PassRequirement
-                  label="At least one lowercase letter"
-                  checked={false}
-                />
-
-                <PassRequirement
-                  label="At least one uppercase letter"
-                  checked={false}
-                />
-
-                <PassRequirement label="At least one number" checked={false} />
-
-                <PassRequirement
-                  label="At least one symbol (e.g. !@#$)"
-                  checked={false}
-                />
-              </View>
             </View>
-            <View style={{ flex: 1 }}>
+            <View
+              style={isSmallScreen ? styles.confirmSmall : styles.confirmLarge}
+            >
               <FormField
                 label="Confirm "
                 required={true}
@@ -217,9 +267,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 24,
   },
+  usernameHint: {
+    color: colorPlater.color.footer,
+    fontFamily: font.family,
+    fontSize: 11,
+    fontStyle: "normal",
+    fontWeight: 400,
+    lineHeight: 13.2,
+  },
   passRequirCard: {
-    minWidth: 226,
-    minHeight: 122,
+    width: "100%",
+    //minWidth: 226,
+    //minHeight: 122,
     paddingVertical: 11,
     paddingHorizontal: 13,
     flexDirection: "column",
@@ -230,7 +289,7 @@ const styles = StyleSheet.create({
     borderColor: colorPlater.color.inputBorder,
     backgroundColor: colorPlater.color.backgroundCard,
     marginBottom: 5,
-    bottom: 10,
+    marginTop: 4,
   },
   nextButton: {
     flex: 1,
@@ -278,6 +337,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     flexDirection: "row",
     gap: 12,
+    marginTop: 20,
   },
   row: {
     flexDirection: "row",
@@ -285,5 +345,18 @@ const styles = StyleSheet.create({
   },
   column: {
     flexDirection: "column",
+  },
+
+  passwordSection: {
+    flex: 1,
+    //flexDirection: "column",
+  },
+
+  confirmSmall: {
+    marginTop: 1,
+  },
+
+  confirmLarge: {
+    flex: 1,
   },
 });
