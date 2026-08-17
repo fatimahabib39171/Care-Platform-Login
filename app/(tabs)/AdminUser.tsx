@@ -271,7 +271,14 @@ export default function AdminUser() {
                 <Text style={styles.backBtnText}>← Back</Text>
               </Pressable>
 
-              <Pressable style={styles.nextButton} onPress={handleNext}>
+              <Pressable
+                onPress={handleNext}
+                style={({ hovered, pressed }) => [
+                  styles.nextButton,
+                  hovered && styles.buttonHover,
+                  pressed && styles.buttonPressed,
+                ]}
+              >
                 <Text style={styles.nextBtnText}>Next: Security →</Text>
               </Pressable>
             </View>
@@ -422,5 +429,14 @@ const styles = StyleSheet.create({
     color: colorPlater.color.textCard,
     fontSize: 14,
     fontWeight: "400",
+  },
+
+  buttonHover: {
+    backgroundColor: colorPlater.color.Primary,
+  },
+
+  buttonPressed: {
+    opacity: 1,
+    transform: [{ scale: 0.97 }],
   },
 });

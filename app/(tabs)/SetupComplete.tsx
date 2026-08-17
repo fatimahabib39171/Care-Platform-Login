@@ -39,8 +39,12 @@ export default function SetupComplete() {
             </Text>
 
             <Pressable
-              style={styles.button}
               onPress={() => router.navigate("/(tabs)")}
+              style={({ hovered, pressed }) => [
+                styles.button,
+                hovered && styles.buttonHover,
+                pressed && styles.buttonPressed,
+              ]}
             >
               <Text style={styles.btnText}>Go to Login</Text>
             </Pressable>
@@ -150,5 +154,14 @@ const styles = StyleSheet.create({
     color: colorPlater.color.textCard,
     fontSize: 14,
     fontWeight: "600",
+  },
+
+  buttonHover: {
+    backgroundColor: colorPlater.color.Primary,
+  },
+
+  buttonPressed: {
+    opacity: 1,
+    transform: [{ scale: 0.97 }],
   },
 });
