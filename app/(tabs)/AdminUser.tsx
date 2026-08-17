@@ -2,6 +2,8 @@ import { colorPlater, font } from "@/theme/theme";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -9,6 +11,7 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CardHeading from "../../components/myui/CardHeading";
 import FormField from "../../components/myui/FormField";
 import PassRequirement from "../../components/myui/PassRequirement";
@@ -36,6 +39,8 @@ export default function AdminUser() {
     password: "",
     confirm: "",
   });
+
+  const inserts = useSafeAreaInsets();
 
   const [showError, setShowError] = useState(false);
 
@@ -81,8 +86,14 @@ export default function AdminUser() {
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={styles.scrollContent}
+      >
         <ScreenLayout>
           <View style={styles.stepperView}>
             <ProgressStepper currentStep={2} totalSteps={4} />
@@ -269,7 +280,7 @@ export default function AdminUser() {
       </ScrollView>
 
       {showError && (
-        <View style={styles.errorBoxView}>
+        <View style={[styles.errorBoxView, { bottom: inserts.bottom + 20 }]}>
           <View style={styles.errorBox}>
             <Text style={styles.errorText}>
               Please complete the highlighted fields before continuing.
@@ -277,7 +288,7 @@ export default function AdminUser() {
           </View>
         </View>
       )}
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 const styles = StyleSheet.create({
@@ -285,7 +296,13 @@ const styles = StyleSheet.create({
     marginVertical: 16,
     marginHorizontal: 73,
   },
-
+  container: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 30,
+  },
   cardView: {
     paddingHorizontal: 24,
     paddingBottom: 24,
@@ -385,7 +402,7 @@ const styles = StyleSheet.create({
 
   errorBoxView: {
     position: "absolute",
-    bottom: 45,
+    //bottom: 45,
     width: "90%",
     alignSelf: "center",
     alignItems: "center",

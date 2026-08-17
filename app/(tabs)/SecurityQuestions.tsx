@@ -1,7 +1,16 @@
 import CardHeading from "@/components/myui/CardHeading";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import FormField from "../../components/myui/FormField";
 import ProgressStepper from "../../components/myui/ProgressStepper";
 import ScreenLayout from "../../components/myui/ScreenLayout";
@@ -19,6 +28,9 @@ export default function SecurityQuestions() {
     question2: "",
     answer2: "",
   });
+
+  const inserts = useSafeAreaInsets();
+
   const [showSuccess, setShowSuccess] = useState(false);
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -56,8 +68,14 @@ export default function SecurityQuestions() {
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={styles.scrollContent}
+      >
         <ScreenLayout>
           <View style={styles.stepperView}>
             <ProgressStepper currentStep={3} totalSteps={4} />
@@ -144,7 +162,7 @@ export default function SecurityQuestions() {
       </ScrollView>
 
       {showSuccess && (
-        <View style={styles.errorBoxView}>
+        <View style={[styles.errorBoxView, { bottom: inserts.bottom + 20 }]}>
           <View style={styles.errorBox}>
             <Text style={styles.errorText}>
               Please complete the highlighted fields.
@@ -152,7 +170,7 @@ export default function SecurityQuestions() {
           </View>
         </View>
       )}
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 const styles = StyleSheet.create({
@@ -160,11 +178,17 @@ const styles = StyleSheet.create({
     marginVertical: 16,
     marginHorizontal: 73,
   },
+  container: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 30,
+  },
   cardView: {
     paddingHorizontal: 24,
     paddingBottom: 24,
   },
-
   nextButton: {
     flex: 1,
     width: 114,
@@ -215,7 +239,7 @@ const styles = StyleSheet.create({
 
   errorBoxView: {
     position: "absolute",
-    bottom: 45,
+    //bottom: 45,
     width: "90%",
     alignSelf: "center",
     alignItems: "center",

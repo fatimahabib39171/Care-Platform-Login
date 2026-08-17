@@ -1,16 +1,21 @@
 import { colorPlater, font } from "@/theme/theme";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
 
 type ProgressStepperProps = {
   currentStep: number;
   totalSteps: number;
 };
 
+const stepName = ["Organisation", "Admin User", "Security", "Done"];
+
 export default function ProgressStepper({
   currentStep,
   totalSteps,
 }: ProgressStepperProps) {
+  const { width } = useWindowDimensions();
+  const isLargeScreen = width >= 600;
+
   return (
     <View style={styles.container}>
       {Array.from({ length: totalSteps }).map((_, index) => {
@@ -21,18 +26,29 @@ export default function ProgressStepper({
 
         return (
           <React.Fragment key={step}>
-            <View
-              style={[
-                styles.dot,
-                isDone && styles.doneDot,
-                isActive && styles.activeDot,
-              ]}
-            >
-              {isDone ? (
-                <Text style={styles.check}>{step}</Text>
-              ) : (
-                <Text style={[styles.number, isActive && styles.activeNumber]}>
-                  {step}
+            <View style={styles.stepContainer}>
+              <View
+                style={[
+                  styles.dot,
+                  isDone && styles.doneDot,
+                  isActive && styles.activeDot,
+                ]}
+              >
+                {isDone ? (
+                  <Text style={styles.check}>{step}</Text>
+                ) : (
+                  <Text
+                    style={[styles.number, isActive && styles.activeNumber]}
+                  >
+                    {step}
+                  </Text>
+                )}
+              </View>
+              {isLargeScreen && (
+                <Text
+                  style={[styles.stepName, isActive && styles.activeStepName]}
+                >
+                  {stepName[index]}
                 </Text>
               )}
             </View>
@@ -97,5 +113,21 @@ const styles = StyleSheet.create({
     backgroundColor: colorPlater.color.line,
 
     marginHorizontal: 6,
+  },
+  stepContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  stepName: {
+    marginLeft: 6,
+    color: colorPlater.color.footer,
+    fontFamily: font.family,
+    fontSize: 11,
+    fontWeight: "400",
+    textAlign: "center",
+  },
+  activeStepName: {
+    color: colorPlater.color.button,
+    fontWeight: "600",
   },
 });

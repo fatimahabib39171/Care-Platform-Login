@@ -1,11 +1,14 @@
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ProgressStepper from "../../components/myui/ProgressStepper";
 import ScreenLayout from "../../components/myui/ScreenLayout";
 import { colorPlater, font } from "../../theme/theme";
 
 export default function SetupComplete() {
+  const inserts = useSafeAreaInsets();
+
   const [showSuccess, setShowSuccess] = useState(true);
 
   useEffect(() => {
@@ -46,7 +49,7 @@ export default function SetupComplete() {
       </ScreenLayout>
 
       {showSuccess && (
-        <View style={styles.successBox}>
+        <View style={[styles.successBox, { bottom: inserts.bottom + 20 }]}>
           <Text style={styles.successText}>Setup Complete</Text>
         </View>
       )}
@@ -127,7 +130,7 @@ const styles = StyleSheet.create({
 
   successBox: {
     position: "absolute",
-    bottom: 45,
+    //bottom: 45,
     // left: 120,
     // right: 120,
     alignSelf: "center",

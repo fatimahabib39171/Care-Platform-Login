@@ -2,13 +2,15 @@ import { colorPlater, font } from "@/theme/theme";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
-  Alert,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import FormField from "../../components/myui/FormField";
 import ScreenLayout from "../../components/myui/ScreenLayout";
 import {
@@ -20,6 +22,7 @@ import {
 export default function App() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [checked, setChecked] = useState(false);
+  const inserts = useSafeAreaInsets();
 
   const [form, setForm] = useState({
     organisationName: "",
@@ -43,6 +46,7 @@ export default function App() {
   };
 
   const [showError, setShowError] = useState(false);
+  const [showForgotSuccess, setShowForgotSuccess] = useState(false);
 
   const handleSignIn = () => {
     const validationErrors = mainValidation(form);
@@ -50,23 +54,33 @@ export default function App() {
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       setShowError(true);
-
       setTimeout(() => {
         setShowError(false);
       }, 3000);
-
       return;
     }
     setShowSuccess(true);
-
     setTimeout(() => {
       setShowSuccess(false);
     }, 3000);
   };
 
+  const handleForgotPassword = () => {
+    setShowForgotSuccess(true);
+    setTimeout(() => {
+      setShowForgotSuccess(false);
+    }, 3000);
+  };
+
   return (
-    <View style={styles.container}>
-      <ScrollView>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={styles.scrollContent}
+      >
         <ScreenLayout>
           <View style={styles.cardView}>
             <Text style={styles.cardHeading}>Welcome back</Text>
@@ -125,9 +139,7 @@ export default function App() {
             <View style={styles.linkView}>
               <Pressable
                 style={styles.forgotBtn}
-                onPress={() =>
-                  Alert.alert("Password reset link sent to your email")
-                }
+                onPress={handleForgotPassword}
               >
                 <Text style={styles.forgotText}>Forgot password?</Text>
               </Pressable>
@@ -144,12 +156,21 @@ export default function App() {
       </ScrollView>
 
       {showSuccess && (
-        <View style={styles.successBox}>
+        <View style={[styles.successBox, { bottom: inserts.bottom + 20 }]}>
           <Text style={styles.successText}>Login successful</Text>
         </View>
       )}
+      {showForgotSuccess && (
+        <View style={[styles.errorBoxView, { bottom: inserts.bottom + 20 }]}>
+          <View style={styles.errorBox}>
+            <Text style={styles.errorText}>
+              Password reset link sent to your email
+            </Text>
+          </View>
+        </View>
+      )}
       {showError && (
-        <View style={styles.errorBoxView}>
+        <View style={[styles.errorBoxView, { bottom: inserts.bottom + 20 }]}>
           <View style={styles.errorBox}>
             <Text style={styles.errorText}>
               Please complete the highlighted fields.
@@ -157,7 +178,7 @@ export default function App() {
           </View>
         </View>
       )}
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -165,7 +186,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 30,
+  },
   cardView: {
     paddingHorizontal: 24,
     paddingBottom: 24,
@@ -276,7 +300,7 @@ const styles = StyleSheet.create({
 
   successBox: {
     position: "absolute",
-    bottom: 45,
+    //bottom: 45,
     // left: 120,
     // right: 120,
     alignSelf: "center",
@@ -299,7 +323,7 @@ const styles = StyleSheet.create({
 
   errorBoxView: {
     position: "absolute",
-    bottom: 45,
+    //bottom: 45,
     width: "90%",
     alignSelf: "center",
     alignItems: "center",

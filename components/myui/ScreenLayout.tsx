@@ -18,7 +18,6 @@ let lastSetupStep:
 export default function ScreenLayout({ children }: ScreenLayoutProps) {
   const pathname = usePathname();
 
-  console.log("PATH:", pathname);
   const isSignInActive = pathname === "/" || pathname === "/index";
 
   const isFirstTimeSetupActive =
