@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
 
   successBox: {
     position: "absolute",
-    bottom: 25,
+    bottom: 45,
     // left: 120,
     // right: 120,
     alignSelf: "center",

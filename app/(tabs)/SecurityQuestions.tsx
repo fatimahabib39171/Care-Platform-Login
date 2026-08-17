@@ -141,16 +141,17 @@ export default function SecurityQuestions() {
             </View>
           </View>
         </ScreenLayout>
-        {showSuccess && (
-          <View style={styles.errorBoxView}>
-            <View style={styles.errorBox}>
-              <Text style={styles.errorText}>
-                Please complete the highlighted fields.
-              </Text>
-            </View>
-          </View>
-        )}
       </ScrollView>
+
+      {showSuccess && (
+        <View style={styles.errorBoxView}>
+          <View style={styles.errorBox}>
+            <Text style={styles.errorText}>
+              Please complete the highlighted fields.
+            </Text>
+          </View>
+        </View>
+      )}
     </View>
   );
 }
@@ -214,7 +215,7 @@ const styles = StyleSheet.create({
 
   errorBoxView: {
     position: "absolute",
-    bottom: 25,
+    bottom: 45,
     width: "90%",
     alignSelf: "center",
     alignItems: "center",

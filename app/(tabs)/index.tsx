@@ -42,11 +42,19 @@ export default function App() {
     }));
   };
 
+  const [showError, setShowError] = useState(false);
+
   const handleSignIn = () => {
     const validationErrors = mainValidation(form);
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
+      setShowError(true);
+
+      setTimeout(() => {
+        setShowError(false);
+      }, 3000);
+
       return;
     }
     setShowSuccess(true);
@@ -138,6 +146,15 @@ export default function App() {
       {showSuccess && (
         <View style={styles.successBox}>
           <Text style={styles.successText}>Login successful</Text>
+        </View>
+      )}
+      {showError && (
+        <View style={styles.errorBoxView}>
+          <View style={styles.errorBox}>
+            <Text style={styles.errorText}>
+              Please complete the highlighted fields.
+            </Text>
+          </View>
         </View>
       )}
     </View>
@@ -259,7 +276,7 @@ const styles = StyleSheet.create({
 
   successBox: {
     position: "absolute",
-    bottom: 25,
+    bottom: 45,
     // left: 120,
     // right: 120,
     alignSelf: "center",
@@ -278,5 +295,29 @@ const styles = StyleSheet.create({
     color: colorPlater.color.textCard,
     fontSize: 14,
     fontWeight: "600",
+  },
+
+  errorBoxView: {
+    position: "absolute",
+    bottom: 45,
+    width: "90%",
+    alignSelf: "center",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 9999,
+  },
+  errorBox: {
+    maxWidth: 568,
+    paddingVertical: 14,
+    paddingHorizontal: 15,
+    borderRadius: 10,
+    backgroundColor: colorPlater.color.Primary,
+    marginHorizontal: 70,
+  },
+
+  errorText: {
+    color: colorPlater.color.textCard,
+    fontSize: 14,
+    fontWeight: "400",
   },
 });

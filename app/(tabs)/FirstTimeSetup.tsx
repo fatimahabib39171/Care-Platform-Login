@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
 
   errorBoxView: {
     position: "absolute",
-    bottom: 25,
+    bottom: 45,
     width: "90%",
     alignSelf: "center",
     alignItems: "center",
