@@ -1,6 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
-import { ReactNode, useState } from "react";
+import { router, usePathname } from "expo-router";
+import { ReactNode } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colorPlater, font } from "../../theme/theme";
@@ -10,7 +10,12 @@ type ScreenLayoutProps = {
 };
 
 export default function ScreenLayout({ children }: ScreenLayoutProps) {
-  const [activeTab, setActiveTab] = useState("Admin Login");
+  const pathname = usePathname();
+
+  const isSignInActive = pathname === "/" || pathname === "/index";
+
+  const isFirstTimeSetupActive = pathname === "/FirstTimeSetup";
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
@@ -34,39 +39,28 @@ export default function ScreenLayout({ children }: ScreenLayoutProps) {
 
         <View style={styles.tabsView}>
           <Pressable
-            style={[
-              styles.tab,
-              activeTab === "Admin Login" && styles.activeTab,
-            ]}
+            style={[styles.tab, isSignInActive && styles.activeTab]}
             onPress={() => {
               router.navigate("/(tabs)");
-              setActiveTab("Admin Login");
             }}
           >
             <Text
-              style={[
-                styles.tabText,
-                activeTab === "Admin Login" && styles.activeTabText,
-              ]}
+              style={[styles.tabText, isSignInActive && styles.activeTabText]}
             >
               Admin Login
             </Text>
           </Pressable>
 
           <Pressable
-            style={[
-              styles.tab,
-              activeTab === "First Time Setup" && styles.activeTab,
-            ]}
+            style={[styles.tab, isFirstTimeSetupActive && styles.activeTab]}
             onPress={() => {
               router.navigate("/(tabs)/FirstTimeSetup");
-              setActiveTab("First Time Setup");
             }}
           >
             <Text
               style={[
                 styles.tabText,
-                activeTab === "First Time Setup" && styles.activeTabText,
+                isFirstTimeSetupActive && styles.activeTabText,
               ]}
             >
               First Time Setup
@@ -153,14 +147,17 @@ const styles = StyleSheet.create({
     lineHeight: 16.8,
   },
   activeTab: {
-    color: colorPlater.color.textCard,
     backgroundColor: colorPlater.color.button,
     boxShadow: "0 4px 12px 0 rgba(26, 78, 138, 0.30)",
   },
   activeTabText: {
     color: colorPlater.color.textCard,
   },
-
+  card: {
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   cardView: {
     width: "90%",
     maxWidth: 568,
@@ -174,11 +171,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 60,
   },
-  card: {
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-  },
+
   footerTextView: {
     flex: 1,
     maxWidth: 600,

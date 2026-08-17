@@ -19,6 +19,7 @@ export default function SecurityQuestions() {
     question2: "",
     answer2: "",
   });
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -28,11 +29,11 @@ export default function SecurityQuestions() {
 
     setForm(updateForm);
 
-    const validtionsErrors = step3Validation(updateForm);
+    const validationErrors = step3Validation(updateForm);
 
     setErrors((prev) => ({
       ...prev,
-      [field as keyof FormErrors]: validtionsErrors[field as keyof FormErrors],
+      [field as keyof FormErrors]: validationErrors[field as keyof FormErrors],
     }));
   };
 
@@ -41,6 +42,13 @@ export default function SecurityQuestions() {
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
+
+      setShowSuccess(true);
+
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 3000);
+
       return;
     }
 
@@ -48,91 +56,102 @@ export default function SecurityQuestions() {
   };
 
   return (
-    <ScrollView>
-      <ScreenLayout>
-        <View style={styles.stepperView}>
-          <ProgressStepper currentStep={3} totalSteps={4} />
-        </View>
-        <View style={styles.cardView}>
-          <CardHeading
-            heading="Security Questions"
-            subheading="Used to recover access if the password is forgotten."
-          />
-
-          <FormField
-            label="Question 1 "
-            required={true}
-            placeholderText="Select a question..."
-            activeDropdown={activeDropdown}
-            setActiveDropdown={setActiveDropdown}
-            selectItem={true}
-            dropdownId="Q1"
-            options={[
-              "What is your mother's maiden name?",
-              "What was the name of your first pet?",
-              "What city were you born in?",
-              "What is your favourite food?",
-            ]}
-            value={form.question1}
-            onSelect={(value) => updateField("question1", value)}
-            error={errors.question1}
-          />
-
-          <FormField
-            label="Answer 1 "
-            required={true}
-            placeholderText="Your answer"
-            activeDropdown={activeDropdown}
-            setActiveDropdown={setActiveDropdown}
-            value={form.answer1}
-            onChangeText={(text) => updateField("answer1", text)}
-            error={errors.answer1}
-          />
-
-          <FormField
-            label="Question 2 "
-            required={true}
-            placeholderText="Select a question..."
-            activeDropdown={activeDropdown}
-            setActiveDropdown={setActiveDropdown}
-            selectItem={true}
-            dropdownId="Q2"
-            options={[
-              "What is your mother's maiden name?",
-              "What was the name of your first pet?",
-              "What city were you born in?",
-              "What is your favourite food?",
-            ]}
-            value={form.question2}
-            onSelect={(value) => updateField("question2", value)}
-            error={errors.question2}
-          />
-
-          <FormField
-            label="Answer 2 "
-            required={true}
-            placeholderText="Your answer"
-            activeDropdown={activeDropdown}
-            setActiveDropdown={setActiveDropdown}
-            value={form.answer2}
-            onChangeText={(text) => updateField("answer2", text)}
-            error={errors.answer2}
-          />
-          <View style={styles.rowBtns}>
-            <Pressable
-              style={styles.backButton}
-              onPress={() => router.navigate("/(tabs)/FirstTimeSetup")}
-            >
-              <Text style={styles.backBtnText}>← Back</Text>
-            </Pressable>
-
-            <Pressable style={styles.nextButton} onPress={handleNext}>
-              <Text style={styles.nextBtnText}>Complete Setup ✓</Text>
-            </Pressable>
+    <View style={{ flex: 1 }}>
+      <ScrollView>
+        <ScreenLayout>
+          <View style={styles.stepperView}>
+            <ProgressStepper currentStep={3} totalSteps={4} />
           </View>
-        </View>
-      </ScreenLayout>
-    </ScrollView>
+          <View style={styles.cardView}>
+            <CardHeading
+              heading="Security Questions"
+              subheading="Used to recover access if the password is forgotten."
+            />
+
+            <FormField
+              label="Question 1 "
+              required={true}
+              placeholderText="Select a question..."
+              activeDropdown={activeDropdown}
+              setActiveDropdown={setActiveDropdown}
+              selectItem={true}
+              dropdownId="Q1"
+              options={[
+                "What is your mother's maiden name?",
+                "What was the name of your first pet?",
+                "What city were you born in?",
+                "What is your favourite food?",
+              ]}
+              value={form.question1}
+              onSelect={(value) => updateField("question1", value)}
+              error={errors.question1}
+            />
+
+            <FormField
+              label="Answer 1 "
+              required={true}
+              placeholderText="Your answer"
+              activeDropdown={activeDropdown}
+              setActiveDropdown={setActiveDropdown}
+              value={form.answer1}
+              onChangeText={(text) => updateField("answer1", text)}
+              error={errors.answer1}
+            />
+
+            <FormField
+              label="Question 2 "
+              required={true}
+              placeholderText="Select a question..."
+              activeDropdown={activeDropdown}
+              setActiveDropdown={setActiveDropdown}
+              selectItem={true}
+              dropdownId="Q2"
+              options={[
+                "What is your mother's maiden name?",
+                "What was the name of your first pet?",
+                "What city were you born in?",
+                "What is your favourite food?",
+              ]}
+              value={form.question2}
+              onSelect={(value) => updateField("question2", value)}
+              error={errors.question2}
+            />
+
+            <FormField
+              label="Answer 2 "
+              required={true}
+              placeholderText="Your answer"
+              activeDropdown={activeDropdown}
+              setActiveDropdown={setActiveDropdown}
+              value={form.answer2}
+              onChangeText={(text) => updateField("answer2", text)}
+              error={errors.answer2}
+            />
+            <View style={styles.rowBtns}>
+              <Pressable
+                style={styles.backButton}
+                onPress={() => router.back()}
+              >
+                <Text style={styles.backBtnText}>← Back</Text>
+              </Pressable>
+
+              <Pressable style={styles.nextButton} onPress={handleNext}>
+                <Text style={styles.nextBtnText}>Complete Setup</Text>
+              </Pressable>
+            </View>
+          </View>
+        </ScreenLayout>
+        {showSuccess && (
+          <View style={styles.errorBoxView}>
+            <View style={styles.errorBox}>
+              <Text style={styles.errorText}>
+                Please complete the highlighted fields.
+              </Text>
+            </View>
+          </View>
+        )}
+      </ScrollView>
+    </View>
   );
 }
 const styles = StyleSheet.create({
@@ -191,5 +210,29 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     flexDirection: "row",
     gap: 12,
+  },
+
+  errorBoxView: {
+    position: "absolute",
+    bottom: 25,
+    width: "90%",
+    alignSelf: "center",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 9999,
+  },
+  errorBox: {
+    maxWidth: 568,
+    paddingVertical: 14,
+    paddingHorizontal: 25,
+    borderRadius: 10,
+    backgroundColor: colorPlater.color.Primary,
+    marginHorizontal: 70,
+  },
+
+  errorText: {
+    color: colorPlater.color.textCard,
+    fontSize: 14,
+    fontWeight: "400",
   },
 });

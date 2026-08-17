@@ -18,7 +18,7 @@ import {
 } from "../../utils/validation/mainValidation";
 
 export default function App() {
-  const [showPass, setShowPass] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [checked, setChecked] = useState(false);
 
   const [form, setForm] = useState({
@@ -34,23 +34,26 @@ export default function App() {
 
     setForm(updateForm);
 
-    const validtionsErrors = mainValidation(updateForm);
+    const validationErrors = mainValidation(updateForm);
 
     setErrors((prev) => ({
       ...prev,
-      [field as keyof FormErrors]: validtionsErrors[field as keyof FormErrors],
+      [field as keyof FormErrors]: validationErrors[field as keyof FormErrors],
     }));
   };
 
-  const handleNext = () => {
+  const handleSignIn = () => {
     const validationErrors = mainValidation(form);
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
+    setShowSuccess(true);
 
-    Alert.alert("Login successfully!");
+    setTimeout(() => {
+      setShowSuccess(false);
+    }, 3000);
   };
 
   return (
@@ -107,7 +110,7 @@ export default function App() {
               <Text style={styles.rmbtn}>Remember me</Text>
             </Pressable>
 
-            <Pressable style={styles.button} onPress={handleNext}>
+            <Pressable style={styles.button} onPress={handleSignIn}>
               <Text style={styles.btnText}>Sign In</Text>
             </Pressable>
 
@@ -131,6 +134,12 @@ export default function App() {
           </View>
         </ScreenLayout>
       </ScrollView>
+
+      {showSuccess && (
+        <View style={styles.successBox}>
+          <Text style={styles.successText}>Login successful</Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -179,23 +188,28 @@ const styles = StyleSheet.create({
 
     borderColor: colorPlater.color.checkBox,
     borderRadius: 3,
-    position: "relative",
+    alignContent: "center",
+    justifyContent: "center",
   },
   checked: {
     backgroundColor: colorPlater.color.Primary,
     borderColor: colorPlater.color.Primary,
   },
   checkedText: {
-    width: 12,
-    height: 12,
-    fontSize: 12,
-    padding: 1,
     color: colorPlater.color.textCard,
-    position: "absolute",
-    bottom: 3,
+    fontSize: 12,
+    fontWeight: "700",
+    lineHeight: 14,
+    textAlign: "center",
+    alignSelf: "center",
+    width: 12,
+    height: 14,
+    bottom: 1,
     left: 0.5,
+    //padding: 1,
+    //position: "absolute",
     //backgroundColor: "red",
-    margin: 1,
+    //margin: 1,
   },
   rmbtn: {
     color: colorPlater.color.cardLabel,
@@ -241,5 +255,28 @@ const styles = StyleSheet.create({
     fontStyle: "normal",
     fontWeight: 600,
     lineHeight: 15.6,
+  },
+
+  successBox: {
+    position: "absolute",
+    bottom: 25,
+    // left: 120,
+    // right: 120,
+    alignSelf: "center",
+    width: "90%",
+    maxWidth: 170,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    backgroundColor: colorPlater.color.doneBtn,
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 9999,
+  },
+
+  successText: {
+    color: colorPlater.color.textCard,
+    fontSize: 14,
+    fontWeight: "600",
   },
 });

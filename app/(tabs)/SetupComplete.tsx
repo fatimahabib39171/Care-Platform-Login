@@ -1,11 +1,23 @@
 import { router } from "expo-router";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import ProgressStepper from "../../components/myui/ProgressStepper";
 import ScreenLayout from "../../components/myui/ScreenLayout";
 import { colorPlater, font } from "../../theme/theme";
+
 export default function SetupComplete() {
+  const [showSuccess, setShowSuccess] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSuccess(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <ScrollView>
+    <View style={{ flex: 1 }}>
       <ScreenLayout>
         <View style={styles.stepperView}>
           <ProgressStepper currentStep={5} totalSteps={4} />
@@ -32,7 +44,13 @@ export default function SetupComplete() {
           </View>
         </View>
       </ScreenLayout>
-    </ScrollView>
+
+      {showSuccess && (
+        <View style={styles.successBox}>
+          <Text style={styles.successText}>Setup Complete</Text>
+        </View>
+      )}
+    </View>
   );
 }
 const styles = StyleSheet.create({
@@ -64,7 +82,7 @@ const styles = StyleSheet.create({
     fontSize: 36,
     fontStyle: "normal",
     fontWeight: 400,
-    lineHeight: 12,
+    lineHeight: 36,
   },
   complete: {
     color: colorPlater.color.doneBtn,
@@ -105,5 +123,28 @@ const styles = StyleSheet.create({
     fontStyle: "normal",
     fontWeight: 700,
     lineHeight: 18,
+  },
+
+  successBox: {
+    position: "absolute",
+    bottom: 25,
+    // left: 120,
+    // right: 120,
+    alignSelf: "center",
+    width: "90%",
+    maxWidth: 170,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    backgroundColor: colorPlater.color.doneBtn,
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 9999,
+  },
+
+  successText: {
+    color: colorPlater.color.textCard,
+    fontSize: 14,
+    fontWeight: "600",
   },
 });

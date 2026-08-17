@@ -22,7 +22,9 @@ import {
 
 export default function AdminUser() {
   const { width } = useWindowDimensions();
-  const isSmallScreen = width < 600;
+  const isMobile = width < 600;
+  //const isTablet = width >= 600 && width < 1000;
+  //const isDesktop = width >= 1000;
 
   const [form, setForm] = useState({
     firstName: "",
@@ -34,6 +36,9 @@ export default function AdminUser() {
     password: "",
     confirm: "",
   });
+
+  const [showError, setShowError] = useState(false);
+
   const [errors, setErrors] = useState<FormErrors>({});
 
   const updateField = (field: keyof FormData, value: string) => {
@@ -41,11 +46,11 @@ export default function AdminUser() {
 
     setForm(updateForm);
 
-    const validtionsErrors = step2Validation(updateForm);
+    const validationErrors = step2Validation(updateForm);
 
     setErrors((prev) => ({
       ...prev,
-      [field as keyof FormErrors]: validtionsErrors[field as keyof FormErrors],
+      [field as keyof FormErrors]: validationErrors[field as keyof FormErrors],
     }));
   };
 
@@ -63,6 +68,12 @@ export default function AdminUser() {
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
+      setShowError(true);
+
+      setTimeout(() => {
+        setShowError(false);
+      }, 3000);
+
       return;
     }
 
@@ -70,191 +81,202 @@ export default function AdminUser() {
   };
 
   return (
-    <ScrollView>
-      <ScreenLayout>
-        <View style={styles.stepperView}>
-          <ProgressStepper currentStep={2} totalSteps={4} />
-        </View>
-        <View style={styles.cardView}>
-          <CardHeading
-            heading="Admin User"
-            subheading="First administrator account for this organisation."
-          />
-          <View style={isSmallScreen ? styles.column : styles.row}>
-            <View style={{ flex: 1 }}>
-              <FormField
-                label="First Name "
-                required={true}
-                placeholderText="First name"
-                value={form.firstName}
-                onChangeText={(text) => {
-                  if (!/^[a-zA-Z]+$/.test(text)) {
-                    setErrors((prev) => ({
-                      ...prev,
-                      firstName: "First name must contain letters only.",
-                    }));
-                    return;
+    <View style={{ flex: 1 }}>
+      <ScrollView>
+        <ScreenLayout>
+          <View style={styles.stepperView}>
+            <ProgressStepper currentStep={2} totalSteps={4} />
+          </View>
+          <View style={styles.cardView}>
+            <CardHeading
+              heading="Admin User"
+              subheading="First administrator account for this organisation."
+            />
+            <View style={isMobile ? styles.column : styles.row}>
+              <View style={{ flex: 1 }}>
+                <FormField
+                  label="First Name "
+                  required={true}
+                  placeholderText="First name"
+                  value={form.firstName}
+                  onChangeText={(text) => {
+                    if (!/^[a-zA-Z]+$/.test(text)) {
+                      setErrors((prev) => ({
+                        ...prev,
+                        firstName: "First name must contain letters only.",
+                      }));
+                      return;
+                    }
+                    updateField("firstName", text);
+                  }}
+                  error={errors.firstName}
+                  activeDropdown={null}
+                  setActiveDropdown={() => {}}
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <FormField
+                  label="Last Name "
+                  required={true}
+                  placeholderText="Last name"
+                  value={form.lastName}
+                  onChangeText={(text) => {
+                    if (!/^[a-zA-Z]+$/.test(text)) {
+                      setErrors((prev) => ({
+                        ...prev,
+                        lastName: "Last name must contain letters only.",
+                      }));
+                      return;
+                    }
+                    updateField("lastName", text);
+                  }}
+                  error={errors.lastName}
+                  activeDropdown={null}
+                  setActiveDropdown={() => {}}
+                />
+              </View>
+            </View>
+            <FormField
+              label="Username "
+              required={true}
+              placeholderText="Choose a username"
+              value={form.username}
+              onChangeText={(text) => updateField("username", text)}
+              error={errors.username}
+              activeDropdown={null}
+              setActiveDropdown={() => {}}
+              belowInput={
+                <Text style={styles.usernameHint}>Used for admin login</Text>
+              }
+            />
+
+            <View style={isMobile ? styles.column : styles.row}>
+              <View style={{ flex: 1 }}>
+                <FormField
+                  label="Email "
+                  required={true}
+                  placeholderText="admin@example.com"
+                  keyboardType="email-address"
+                  value={form.email}
+                  onChangeText={(text) => updateField("email", text)}
+                  error={errors.email}
+                  activeDropdown={null}
+                  setActiveDropdown={() => {}}
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <FormField
+                  label="Phone"
+                  placeholderText="+92 3xx xxxxxxx"
+                  keyboardType="phone-pad"
+                  value={form.phone}
+                  onChangeText={(text) => {
+                    if (!/^\+?[0-9()]*$/.test(text)) {
+                      setErrors((prev) => ({
+                        ...prev,
+                        phone:
+                          "Phone number can contain +, (, ) and digits only.",
+                      }));
+                      return;
+                    }
+
+                    updateField("phone", text);
+                  }}
+                  error={errors.phone}
+                  activeDropdown={null}
+                  setActiveDropdown={() => {}}
+                />
+              </View>
+            </View>
+
+            <FormField
+              label="Designation"
+              placeholderText="e.g. Lead Physiotherapist"
+              value={form.designation}
+              onChangeText={(text) => updateField("designation", text)}
+              activeDropdown={null}
+              setActiveDropdown={() => {}}
+            />
+
+            <View style={isMobile ? styles.column : styles.row}>
+              <View style={styles.passwordSection}>
+                <FormField
+                  label="Password "
+                  required={true}
+                  placeholderText="Enter password"
+                  secureTextEntry={true}
+                  value={form.password}
+                  onChangeText={(text) => updateField("password", text)}
+                  error={errors.password}
+                  activeDropdown={null}
+                  setActiveDropdown={() => {}}
+                  belowInput={
+                    <View style={styles.passRequirCard}>
+                      <PassRequirement
+                        label="At least 8 characters"
+                        checked={passwordRequirement.minLength}
+                      />
+                      <PassRequirement
+                        label="At least one lowercase letter"
+                        checked={passwordRequirement.lowerCase}
+                      />
+                      <PassRequirement
+                        label="At least one uppercase letter"
+                        checked={passwordRequirement.upperCase}
+                      />
+                      <PassRequirement
+                        label="At least one number"
+                        checked={passwordRequirement.number}
+                      />
+                      <PassRequirement
+                        label="At least one symbol (e.g. !@#$)"
+                        checked={passwordRequirement.symbol}
+                      />
+                    </View>
                   }
-                  updateField("firstName", text);
-                }}
-                error={errors.firstName}
-                activeDropdown={null}
-                setActiveDropdown={() => {}}
-              />
+                />
+              </View>
+              <View
+                style={isMobile ? styles.confirmSmall : styles.confirmLarge}
+              >
+                <FormField
+                  label="Confirm "
+                  required={true}
+                  placeholderText="Repeat password"
+                  secureTextEntry={true}
+                  value={form.confirm}
+                  onChangeText={(text) => updateField("confirm", text)}
+                  error={errors.confirm}
+                  activeDropdown={null}
+                  setActiveDropdown={() => {}}
+                />
+              </View>
             </View>
-            <View style={{ flex: 1 }}>
-              <FormField
-                label="Last Name "
-                required={true}
-                placeholderText="Last name"
-                value={form.lastName}
-                onChangeText={(text) => {
-                  if (!/^[a-zA-Z]+$/.test(text)) {
-                    setErrors((prev) => ({
-                      ...prev,
-                      lirstName: "Last name must contain letters only.",
-                    }));
-                    return;
-                  }
-                  updateField("lastName", text);
-                }}
-                error={errors.lastName}
-                activeDropdown={null}
-                setActiveDropdown={() => {}}
-              />
+            <View style={styles.rowBtns}>
+              <Pressable
+                style={styles.backButton}
+                onPress={() => router.back()}
+              >
+                <Text style={styles.backBtnText}>← Back</Text>
+              </Pressable>
+
+              <Pressable style={styles.nextButton} onPress={handleNext}>
+                <Text style={styles.nextBtnText}>Next: Security →</Text>
+              </Pressable>
             </View>
           </View>
-          <FormField
-            label="Username "
-            required={true}
-            placeholderText="Choose a username"
-            value={form.username}
-            onChangeText={(text) => updateField("username", text)}
-            error={errors.username}
-            activeDropdown={null}
-            setActiveDropdown={() => {}}
-            belowInput={
-              <Text style={styles.usernameHint}>Used for admin login</Text>
-            }
-          />
-
-          <View style={isSmallScreen ? styles.column : styles.row}>
-            <View style={{ flex: 1 }}>
-              <FormField
-                label="Email "
-                required={true}
-                placeholderText="admin@example.com"
-                keyboardType="email-address"
-                value={form.email}
-                onChangeText={(text) => updateField("email", text)}
-                error={errors.email}
-                activeDropdown={null}
-                setActiveDropdown={() => {}}
-              />
-            </View>
-            <View style={{ flex: 1 }}>
-              <FormField
-                label="Phone"
-                placeholderText="+92 3xx xxxxxxx"
-                keyboardType="phone-pad"
-                value={form.phone}
-                onChangeText={(text) => {
-                  if (!/^\+?[0-9()]*$/.test(text)) {
-                    setErrors((prev) => ({
-                      ...prev,
-                      phone:
-                        "Phone number can contain +, (, ) and digits only.",
-                    }));
-                    return;
-                  }
-
-                  updateField("phone", text);
-                }}
-                error={errors.phone}
-                activeDropdown={null}
-                setActiveDropdown={() => {}}
-              />
+        </ScreenLayout>
+        {showError && (
+          <View style={styles.errorBoxView}>
+            <View style={styles.errorBox}>
+              <Text style={styles.errorText}>
+                Please complete the highlighted fields before continuing.
+              </Text>
             </View>
           </View>
-
-          <FormField
-            label="Designation"
-            placeholderText="e.g. Lead Physiotherapist"
-            value={form.designation}
-            onChangeText={(text) => updateField("designation", text)}
-            activeDropdown={null}
-            setActiveDropdown={() => {}}
-          />
-
-          <View style={isSmallScreen ? styles.column : styles.row}>
-            <View style={styles.passwordSection}>
-              <FormField
-                label="Password "
-                required={true}
-                placeholderText="Enter password"
-                secureTextEntry={true}
-                value={form.password}
-                onChangeText={(text) => updateField("password", text)}
-                error={errors.password}
-                activeDropdown={null}
-                setActiveDropdown={() => {}}
-                belowInput={
-                  <View style={styles.passRequirCard}>
-                    <PassRequirement
-                      label="At least 8 characters"
-                      checked={passwordRequirement.minLength}
-                    />
-                    <PassRequirement
-                      label="At least one lowercase letter"
-                      checked={passwordRequirement.lowerCase}
-                    />
-                    <PassRequirement
-                      label="At least one uppercase letter"
-                      checked={passwordRequirement.upperCase}
-                    />
-                    <PassRequirement
-                      label="At least one number"
-                      checked={passwordRequirement.number}
-                    />
-                    <PassRequirement
-                      label="At least one symbol (e.g. !@#$)"
-                      checked={passwordRequirement.symbol}
-                    />
-                  </View>
-                }
-              />
-            </View>
-            <View
-              style={isSmallScreen ? styles.confirmSmall : styles.confirmLarge}
-            >
-              <FormField
-                label="Confirm "
-                required={true}
-                placeholderText="Repeat password"
-                secureTextEntry={true}
-                value={form.confirm}
-                onChangeText={(text) => updateField("confirm", text)}
-                error={errors.confirm}
-                activeDropdown={null}
-                setActiveDropdown={() => {}}
-              />
-            </View>
-          </View>
-          <View style={styles.rowBtns}>
-            <Pressable
-              style={styles.backButton}
-              onPress={() => router.navigate("/(tabs)/FirstTimeSetup")}
-            >
-              <Text style={styles.backBtnText}>← Back</Text>
-            </Pressable>
-
-            <Pressable style={styles.nextButton} onPress={handleNext}>
-              <Text style={styles.nextBtnText}>Next: Security →</Text>
-            </Pressable>
-          </View>
-        </View>
-      </ScreenLayout>
-    </ScrollView>
+        )}
+      </ScrollView>
+    </View>
   );
 }
 const styles = StyleSheet.create({
@@ -358,5 +380,29 @@ const styles = StyleSheet.create({
 
   confirmLarge: {
     flex: 1,
+  },
+
+  errorBoxView: {
+    position: "absolute",
+    bottom: 25,
+    width: "90%",
+    alignSelf: "center",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 9999,
+  },
+  errorBox: {
+    maxWidth: 568,
+    paddingVertical: 14,
+    paddingHorizontal: 15,
+    borderRadius: 10,
+    backgroundColor: colorPlater.color.Primary,
+    marginHorizontal: 70,
+  },
+
+  errorText: {
+    color: colorPlater.color.textCard,
+    fontSize: 14,
+    fontWeight: "400",
   },
 });

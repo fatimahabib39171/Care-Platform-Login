@@ -97,6 +97,7 @@ export function Selection({
           <View
             style={[
               styles.dropdown,
+              error && styles.dropdownError,
               {
                 top: dropdownPosition.top,
                 left: dropdownPosition.left,
@@ -187,13 +188,13 @@ const styles = StyleSheet.create({
 
   dropdown: {
     position: "absolute",
-    top: 48,
-    left: 0,
-    right: 0,
-
-    borderWidth: 1,
-    borderColor: colorPlater.color.inputBorder,
-    borderRadius: 10,
+    // top: 48,
+    // left: 0,
+    // right: 0,
+    marginTop: -17,
+    borderWidth: 0.5,
+    borderColor: colorPlater.color.cardLabel,
+    //borderRadius: 10,
     backgroundColor: colorPlater.color.input,
 
     zIndex: 99999,
@@ -208,12 +209,19 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
   },
 
+  dropdownError: {
+    backgroundColor: colorPlater.color.inputError,
+    borderColor: colorPlater.color.cardLabel,
+    borderWidth: 0.5,
+    marginTop: -3,
+  },
+
   option: {
     paddingHorizontal: 14,
     paddingVertical: 12,
 
-    borderBottomWidth: 1,
-    borderBottomColor: colorPlater.color.inputBorder,
+    borderBottomWidth: 0.5,
+    borderBottomColor: colorPlater.color.cardLabel,
   },
 
   lastOption: {
