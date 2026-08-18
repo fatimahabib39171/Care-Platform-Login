@@ -1,5 +1,5 @@
-import CardHeading from "@/components/myui/CardHeading";
-import { colorPlater, font } from "@/theme/theme";
+import CardHeading from "@/components/CardHeading";
+import { colorPlater, font } from "@/constants/theme";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -13,9 +13,9 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import FormField from "../../components/myui/FormField";
-import ProgressStepper from "../../components/myui/ProgressStepper";
-import ScreenLayout from "../../components/myui/ScreenLayout";
+import FormField from "../../components/FormField";
+import ProgressStepper from "../../components/ProgressStepper";
+import ScreenLayout from "../../components/ScreenLayout";
 import {
   FormData,
   FormErrors,
@@ -254,9 +254,8 @@ export default function FirstTimeSetup() {
 
             <Pressable
               onPress={handleNext}
-              style={({ hovered, pressed }) => [
+              style={({ pressed }) => [
                 styles.button,
-                hovered && styles.buttonHover,
                 pressed && styles.buttonPressed,
               ]}
             >

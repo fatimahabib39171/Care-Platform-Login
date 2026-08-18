@@ -2,9 +2,9 @@ import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import ProgressStepper from "../../components/myui/ProgressStepper";
-import ScreenLayout from "../../components/myui/ScreenLayout";
-import { colorPlater, font } from "../../theme/theme";
+import ProgressStepper from "../../components/ProgressStepper";
+import ScreenLayout from "../../components/ScreenLayout";
+import { colorPlater, font } from "../../constants/theme";
 
 export default function SetupComplete() {
   const inserts = useSafeAreaInsets();

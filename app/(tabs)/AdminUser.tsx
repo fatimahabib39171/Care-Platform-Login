@@ -1,4 +1,4 @@
-import { colorPlater, font } from "@/theme/theme";
+import { colorPlater, font } from "@/constants/theme";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -12,11 +12,11 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import CardHeading from "../../components/myui/CardHeading";
-import FormField from "../../components/myui/FormField";
-import PassRequirement from "../../components/myui/PassRequirement";
-import ProgressStepper from "../../components/myui/ProgressStepper";
-import ScreenLayout from "../../components/myui/ScreenLayout";
+import CardHeading from "../../components/CardHeading";
+import FormField from "../../components/FormField";
+import PassRequirement from "../../components/PassRequirement";
+import ProgressStepper from "../../components/ProgressStepper";
+import ScreenLayout from "../../components/ScreenLayout";
 import {
   FormData,
   FormErrors,

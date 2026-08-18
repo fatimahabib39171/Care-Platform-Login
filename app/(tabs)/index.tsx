@@ -1,4 +1,4 @@
-import { colorPlater, font } from "@/theme/theme";
+import { colorPlater, font } from "@/constants/theme";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -11,8 +11,8 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import FormField from "../../components/myui/FormField";
-import ScreenLayout from "../../components/myui/ScreenLayout";
+import FormField from "../../components/FormField";
+import ScreenLayout from "../../components/ScreenLayout";
 import {
   FormData,
   FormErrors,
