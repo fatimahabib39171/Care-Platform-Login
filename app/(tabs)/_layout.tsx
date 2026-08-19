@@ -9,6 +9,8 @@ import {
   Roboto_700Bold,
 } from "@expo-google-fonts/roboto";
 import { useFonts } from "expo-font";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { colorPlater } from "@/constants/theme";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -27,11 +29,15 @@ export default function TabLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        animation: "fade",
-        animationDuration: 400,
-        gestureEnabled: true,
-        
+        animation: "none",
+        animationDuration: 10,
+        contentStyle: {
+          backgroundColor: colorPlater.color.background,
+        },
+        presentation: "card",
       }}
+      
     />
+    
   );
 }

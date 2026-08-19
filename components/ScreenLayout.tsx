@@ -4,6 +4,7 @@ import { ReactNode } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colorPlater, font } from "../constants/theme";
+import { FadeCard } from "@/components/FadeCard";
 
 type ScreenLayoutProps = {
   children: ReactNode;
@@ -31,7 +32,7 @@ export default function ScreenLayout({ children }: ScreenLayoutProps) {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ScrollView>
         <View style={styles.header}>
           <LinearGradient
@@ -82,6 +83,7 @@ export default function ScreenLayout({ children }: ScreenLayoutProps) {
           </Pressable>
         </View>
 
+
         <View style={styles.card}>
           <View style={styles.cardView}>{children}</View>
         </View>
@@ -90,7 +92,7 @@ export default function ScreenLayout({ children }: ScreenLayoutProps) {
           <Text style={styles.footerTextView}>Care-Platform Web</Text>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -108,9 +110,8 @@ const styles = StyleSheet.create({
     height: 75,
   },
   headerTextView: {
-    paddingTop: 18,
+    paddingVertical: 18,
     paddingRight: 378.56,
-    paddingBottom: 18,
     paddingLeft: 24,
   },
   textHeading: {
@@ -120,7 +121,7 @@ const styles = StyleSheet.create({
     fontStyle: "normal",
     fontWeight: 700,
     lineHeight: 24,
-    letterSpacing: 0.5,
+    letterSpacing: 1,
     marginBottom: 1,
   },
   textSubheading: {

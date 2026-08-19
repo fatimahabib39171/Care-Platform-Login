@@ -10,6 +10,12 @@ import {
   Text,
   View,
 } from "react-native";
+import Animated, {
+  FadeIn,
+  FadeOut,
+} from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import FormField from "../../components/FormField";
 import ScreenLayout from "../../components/ScreenLayout";
@@ -47,6 +53,7 @@ export default function App() {
 
   const [showError, setShowError] = useState(false);
   const [showForgotSuccess, setShowForgotSuccess] = useState(false);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   const handleSignIn = () => {
     const validationErrors = mainValidation(form);
@@ -72,7 +79,30 @@ export default function App() {
     }, 3000);
   };
 
+  const handleBlur = (
+    field: keyof FormData,
+    fieldName: string
+  ) => {
+    setTouched((prev) => ({
+      ...prev,
+      [field]: true,
+    }));
+  
+    if (!form[field]?.trim()) {
+      setErrors((prev) => ({
+        ...prev,
+        [field]: `${fieldName} is required.`,
+      }));
+    }
+  };
+
   return (
+    /*<Animated.View
+        entering={FadeIn.duration(300)}
+        exiting={FadeOut.duration(250)}
+        style={styles.saveArea}
+      >*/
+
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -97,6 +127,7 @@ export default function App() {
               error={errors.organisationName}
               activeDropdown={null}
               setActiveDropdown={() => {}}
+              onBlur={() => handleBlur("organisationName", "Organisation name")}
             />
 
             <FormField
@@ -108,6 +139,7 @@ export default function App() {
               error={errors.username}
               activeDropdown={null}
               setActiveDropdown={() => {}}
+              onBlur={() => handleBlur("username","Username")}
             />
 
             <FormField
@@ -120,6 +152,7 @@ export default function App() {
               activeDropdown={null}
               setActiveDropdown={() => {}}
               secureTextEntry={true}
+              onBlur={() => handleBlur("password", "Password")}
             />
 
             <Pressable
@@ -186,12 +219,15 @@ export default function App() {
         </View>
       )}
     </KeyboardAvoidingView>
+    /*</Animated.View>*/
+
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colorPlater.color.background,
   },
   scrollContent: {
     flexGrow: 1,

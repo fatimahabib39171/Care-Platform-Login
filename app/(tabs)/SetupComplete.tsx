@@ -20,14 +20,14 @@ export default function SetupComplete() {
   }, []);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
       <ScreenLayout>
         <View style={styles.stepperView}>
           <ProgressStepper currentStep={5} totalSteps={4} />
         </View>
         <View>
           <View style={styles.cardView}>
-            <View style={styles.container}>
+            <View style={styles.card}>
               <View style={styles.isDone}>
                 <Text style={styles.isDoneText}>✓</Text>
               </View>
@@ -70,6 +70,9 @@ const styles = StyleSheet.create({
     //paddingBottom: 24,
   },
   container: {
+     flex: 1, 
+     backgroundColor: colorPlater.color.background,},
+  card: {
     alignSelf: "center",
     marginTop: 40,
   },

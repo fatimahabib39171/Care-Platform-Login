@@ -99,18 +99,18 @@ export default function FormField({
                 error && styles.inputError,
                 isFocused && !error && styles.inputFocused,
               ]}
-            placeholder={placeholderText}
-            placeholderTextColor={colorPlater.color.cardLabel}
-            {...inputProps}
-            secureTextEntry={isPassword ? !showPass : false}
-            onFocus={(e) => {
-    setIsFocused(true);
-    inputProps.onFocus?.(e);
-  }}
-  onBlur={(e) => {
-    setIsFocused(false);
-    inputProps.onBlur?.(e);
-  }}
+              placeholder={placeholderText}
+              placeholderTextColor={colorPlater.color.cardLabel}
+              {...inputProps}
+              secureTextEntry={isPassword ? !showPass : false}
+              onFocus={(e) => {
+                setIsFocused(true);
+                inputProps.onFocus?.(e);
+              }}
+              onBlur={(e) => {
+                setIsFocused(false);
+                inputProps.onBlur?.(e);
+              }}
           />
 
           {isPassword && (

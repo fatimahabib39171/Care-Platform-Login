@@ -11,6 +11,10 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+import Animated, {
+  FadeIn,
+  FadeOut,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CardHeading from "../../components/CardHeading";
 import FormField from "../../components/FormField";
@@ -45,6 +49,10 @@ export default function AdminUser() {
   const [showError, setShowError] = useState(false);
 
   const [errors, setErrors] = useState<FormErrors>({});
+
+  const [touched, setTouched] = useState<
+    Partial<Record<keyof FormData, boolean>>
+  >({});
 
   const updateField = (field: keyof FormData, value: string) => {
     const updateForm = { ...form, [field]: value };
@@ -85,6 +93,23 @@ export default function AdminUser() {
     router.push("/(tabs)/SecurityQuestions");
   };
 
+  const handleBlur = (
+    field: keyof FormData,
+    fieldName: string
+  ) => {
+    setTouched((prev) => ({
+      ...prev,
+      [field]: true,
+    }));
+  
+    if (!form[field]?.trim()) {
+      setErrors((prev) => ({
+        ...prev,
+        [field]: `${fieldName} is required.`,
+      }));
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -123,6 +148,7 @@ export default function AdminUser() {
                   error={errors.firstName}
                   activeDropdown={null}
                   setActiveDropdown={() => {}}
+                  onBlur={() => handleBlur("firstName", "First name")}
                 />
               </View>
               <View style={{ flex: 1 }}>
@@ -144,6 +170,7 @@ export default function AdminUser() {
                   error={errors.lastName}
                   activeDropdown={null}
                   setActiveDropdown={() => {}}
+                  onBlur={() => handleBlur("lastName", "Last name")}
                 />
               </View>
             </View>
@@ -156,6 +183,7 @@ export default function AdminUser() {
               error={errors.username}
               activeDropdown={null}
               setActiveDropdown={() => {}}
+              onBlur={() => handleBlur("username", "Username")}
               belowInput={
                 <Text style={styles.usernameHint}>Used for admin login</Text>
               }
@@ -173,6 +201,7 @@ export default function AdminUser() {
                   error={errors.email}
                   activeDropdown={null}
                   setActiveDropdown={() => {}}
+                  onBlur={() => handleBlur("email", "A vaild email")}
                 />
               </View>
               <View style={{ flex: 1 }}>
@@ -207,6 +236,7 @@ export default function AdminUser() {
               onChangeText={(text) => updateField("designation", text)}
               activeDropdown={null}
               setActiveDropdown={() => {}}
+              onBlur={() => handleBlur("designation", "Designation")}
             />
 
             <View style={isMobile ? styles.column : styles.row}>
@@ -221,6 +251,7 @@ export default function AdminUser() {
                   error={errors.password}
                   activeDropdown={null}
                   setActiveDropdown={() => {}}
+                  onBlur={() => handleBlur("password", "Password")}
                   belowInput={
                     <View style={styles.passRequirCard}>
                       <PassRequirement
@@ -260,6 +291,7 @@ export default function AdminUser() {
                   error={errors.confirm}
                   activeDropdown={null}
                   setActiveDropdown={() => {}}
+                  onBlur={() => handleBlur("confirm", "Confirm password")}
                 />
               </View>
             </View>
@@ -303,8 +335,12 @@ const styles = StyleSheet.create({
     marginVertical: 16,
     marginHorizontal: 73,
   },
+  saveArea: {
+    flex:1,
+  },
   container: {
     flex: 1,
+    backgroundColor: colorPlater.color.background,
   },
   scrollContent: {
     flexGrow: 1,

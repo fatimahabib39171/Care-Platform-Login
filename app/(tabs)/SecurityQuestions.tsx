@@ -65,6 +65,24 @@ export default function SecurityQuestions() {
     router.push("/(tabs)/SetupComplete");
   };
 
+    const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const handleBlur = (
+    field: keyof FormData,
+    fieldName: string
+  ) => {
+    setTouched((prev) => ({
+      ...prev,
+      [field]: true,
+    }));
+  
+    if (!form[field]?.trim()) {
+      setErrors((prev) => ({
+        ...prev,
+        [field]: `${fieldName} is required.`,
+      }));
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -96,6 +114,7 @@ export default function SecurityQuestions() {
               value={form.question1}
               onSelect={(value) => updateField("question1", value)}
               error={errors.question1}
+              onBlur={() => handleBlur("question1", "Question")}
             />
 
             <FormField
@@ -107,6 +126,7 @@ export default function SecurityQuestions() {
               value={form.answer1}
               onChangeText={(text) => updateField("answer1", text)}
               error={errors.answer1}
+              onBlur={() => handleBlur("answer1", "Answer")}
             />
 
             <FormField
@@ -121,6 +141,7 @@ export default function SecurityQuestions() {
               value={form.question2}
               onSelect={(value) => updateField("question2", value)}
               error={errors.question2}
+              onBlur={() => handleBlur("question2", "Question")}
             />
 
             <FormField
@@ -132,6 +153,7 @@ export default function SecurityQuestions() {
               value={form.answer2}
               onChangeText={(text) => updateField("answer2", text)}
               error={errors.answer2}
+              onBlur={() => handleBlur("answer2", "Answer")}
             />
             <View style={styles.rowBtns}>
               <Pressable
@@ -175,6 +197,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    backgroundColor: colorPlater.color.background,
   },
   scrollContent: {
     flexGrow: 1,

@@ -2,6 +2,10 @@ import CardHeading from "@/components/CardHeading";
 import { colorPlater, font } from "@/constants/theme";
 import { router } from "expo-router";
 import { useState } from "react";
+import Animated, {
+  FadeIn,
+  FadeOut,
+} from "react-native-reanimated";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -21,7 +25,6 @@ import {
   FormErrors,
   step1Validation,
 } from "../../utils/validation/step1Validation";
-
 export default function FirstTimeSetup() {
   const [form, setForm] = useState<FormData>({
     organisationName: "",
@@ -39,6 +42,8 @@ export default function FirstTimeSetup() {
 
   const [showError, setShowError] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+    const [touched, setTouched] = useState<Record<string, boolean>>({});
+
 
   const { width } = useWindowDimensions();
   const isMobile = width < 600;
@@ -78,6 +83,23 @@ export default function FirstTimeSetup() {
     router.push("/(tabs)/AdminUser");
   };
 
+  const handleBlur = (
+  field: keyof FormData,
+  fieldName: string
+) => {
+  setTouched((prev) => ({
+    ...prev,
+    [field]: true,
+  }));
+
+  if (!form[field]?.trim()) {
+    setErrors((prev) => ({
+      ...prev,
+      [field]: `${fieldName} is required.`,
+    }));
+  }
+};
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -107,6 +129,7 @@ export default function FirstTimeSetup() {
               error={errors.organisationName}
               activeDropdown={activeDropdown}
               setActiveDropdown={setActiveDropdown}
+              onBlur={() => handleBlur("organisationName", "Organisation name")}
             />
             <View style={isMobile ? styles.column : styles.row}>
               <View style={{ flex: 1 }}>
@@ -120,6 +143,7 @@ export default function FirstTimeSetup() {
                   selectItem={true}
                   activeDropdown={activeDropdown}
                   setActiveDropdown={setActiveDropdown}
+                  onBlur={() => handleBlur("type", "Type")}
                   dropdownId="Type"
                   options={[
                     "Hospital",
@@ -143,6 +167,7 @@ export default function FirstTimeSetup() {
                   selectItem={true}
                   activeDropdown={activeDropdown}
                   setActiveDropdown={setActiveDropdown}
+                  onBlur={() => handleBlur("timeZone", "Time zone")}
                   dropdownId="TimeZone"
                   options={[
                     "UTC+05:00 Karachi / Islamabad",
@@ -163,6 +188,7 @@ export default function FirstTimeSetup() {
               error={errors.address}
               activeDropdown={activeDropdown}
               setActiveDropdown={setActiveDropdown}
+              onBlur={() => handleBlur("address", "Address" )}
             />
             <View style={isMobile ? styles.column : styles.row}>
               <View style={{ flex: 1 }}>
@@ -173,6 +199,7 @@ export default function FirstTimeSetup() {
                   onChangeText={(text) => updateField("cityState", text)}
                   activeDropdown={activeDropdown}
                   setActiveDropdown={setActiveDropdown}
+                  onBlur={() => handleBlur("cityState", "City / State")}
                 />
               </View>
 
@@ -187,6 +214,7 @@ export default function FirstTimeSetup() {
                   error={errors.postalCode}
                   activeDropdown={activeDropdown}
                   setActiveDropdown={setActiveDropdown}
+                  onBlur={() => handleBlur("postalCode", "Postal Code")}
                 />
               </View>
             </View>
@@ -202,6 +230,7 @@ export default function FirstTimeSetup() {
                   error={errors.country}
                   activeDropdown={activeDropdown}
                   setActiveDropdown={setActiveDropdown}
+                  onBlur={() => handleBlur("country", "Country")}
                 />
               </View>
 
@@ -227,6 +256,7 @@ export default function FirstTimeSetup() {
                   error={errors.phone}
                   activeDropdown={activeDropdown}
                   setActiveDropdown={setActiveDropdown}
+                  onBlur={() => handleBlur("phone", "Phone number")}
                 />
               </View>
             </View>
@@ -240,6 +270,7 @@ export default function FirstTimeSetup() {
               error={errors.email}
               activeDropdown={activeDropdown}
               setActiveDropdown={setActiveDropdown}
+              onBlur={() => handleBlur("email", "A valid email")}
             />
 
             <FormField
@@ -250,6 +281,7 @@ export default function FirstTimeSetup() {
               onChangeText={(text) => updateField("description", text)}
               activeDropdown={activeDropdown}
               setActiveDropdown={setActiveDropdown}
+              onBlur={() => handleBlur("description", "Description")}
             />
 
             <Pressable
@@ -274,6 +306,8 @@ export default function FirstTimeSetup() {
         </View>
       )}
     </KeyboardAvoidingView>
+      /*</Animated.View>*/
+
   );
 }
 const styles = StyleSheet.create({
@@ -281,8 +315,12 @@ const styles = StyleSheet.create({
     marginVertical: 16,
     marginHorizontal: 73,
   },
+  saveArea: {
+    flex: 1,
+  },
   container: {
     flex: 1,
+    backgroundColor: colorPlater.color.background,
   },
   scrollContent: {
     flexGrow: 1,
