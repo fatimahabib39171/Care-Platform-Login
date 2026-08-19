@@ -17,6 +17,8 @@ type SelectionProps = {
   dropdownId: string;
   activeDropdown: string | null;
   setActiveDropdown: React.Dispatch<React.SetStateAction<string | null>>;
+  onOpen?: () => void;
+  onClose?: () => void;
 };
 
 export function Selection({
@@ -27,6 +29,8 @@ export function Selection({
   dropdownId,
   activeDropdown,
   setActiveDropdown,
+  onOpen,
+  onClose,
 }: SelectionProps) {
   const [selected, setSelected] = useState("");
   const [dropdownPosition, setDropdownPosition] = useState({
@@ -41,16 +45,29 @@ export function Selection({
   const openDropdown = () => {
     if (isOpen) {
       setActiveDropdown(null);
+      onClose?.();
       return;
     }
     setActiveDropdown(dropdownId);
+    onOpen?.();
   };
 
+  const dropdownOptions = [ placeholder, ...options]
+
   const handleSelect = (value: string) => {
+    if( value === placeholder)
+    {
+      setSelected("");
+      setActiveDropdown(null);
+      onSelect?.("");
+      onClose?.();
+      return;
+    }
     setSelected(value);
     setActiveDropdown(null);
     onSelect?.(value);
-  };
+    onClose?.();
+  }
 
   return (
     <>
@@ -72,7 +89,9 @@ export function Selection({
       >
         {" "}
         <Pressable
-          style={[styles.input, error && styles.inputError]}
+          style={[styles.input, 
+            error && styles.inputError, 
+            isOpen && !error && styles.inputFocused]}
           onPress={openDropdown}
         >
           <Text style={styles.inputText}>{selected || placeholder}</Text>
@@ -83,14 +102,14 @@ export function Selection({
         visible={isOpen}
         transparent
         animationType="none"
-        onRequestClose={() => setActiveDropdown(null)}
+        onRequestClose={() => {setActiveDropdown(null); onClose?.();}}
       >
         {/* Transparent full-screen container */}
         <View style={styles.modalContainer}>
           {/* Click outside to close */}
           <Pressable
             style={StyleSheet.absoluteFill}
-            onPress={() => setActiveDropdown(null)}
+            onPress={() => {setActiveDropdown(null); onClose?.();;}}
           />
 
           {/* Dropdown itself */}
@@ -108,12 +127,12 @@ export function Selection({
               },
             ]}
           >
-            {options.map((option, index) => (
+            {dropdownOptions.map((option, index) => (
               <Pressable
                 key={option}
                 style={[
                   styles.option,
-                  index === options.length - 1 && styles.lastOption,
+                  index === options.length && styles.lastOption,
                 ]}
                 onPress={() => handleSelect(option)}
               >
@@ -231,5 +250,10 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 14,
     color: colorPlater.color.cardLabel,
+  },
+
+  inputFocused: {
+    borderColor: colorPlater.color.focusGlow,
+
   },
 });

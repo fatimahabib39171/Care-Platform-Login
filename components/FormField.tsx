@@ -53,6 +53,18 @@ export default function FormField({
       </Text>
 
       {selectItem ? (
+
+      <View style={styles.inputWrapper}>
+          {isFocused && (
+            <View
+              pointerEvents="none"
+              style={[
+                styles.focusGlow,
+                error && styles.errorFocusGlow,
+              ]}
+            />
+          )}
+
         <Selection
           options={options}
           placeholder={placeholderText}
@@ -60,19 +72,26 @@ export default function FormField({
           activeDropdown={activeDropdown}
           setActiveDropdown={setActiveDropdown}
           error={error}
-          onSelect={onSelect}
+          onSelect={(value) => {
+            setIsFocused(false);
+            onSelect?.(value);
+          }}
+          onOpen={() => setIsFocused(true)}
+          onClose={() => setIsFocused(false)}
         />
+
+        </View>
       ) : (
         <View style={styles.inputWrapper}>
-  {isFocused && (
-    <View
-      pointerEvents="none"
-      style={[
-        styles.focusGlow,
-        error && styles.errorFocusGlow,
-      ]}
-    />
-  )}
+          {isFocused && (
+            <View
+              pointerEvents="none"
+              style={[
+                styles.focusGlow,
+                error && styles.errorFocusGlow,
+              ]}
+            />
+          )}
           <View style={styles.inputContainer}>
             <TextInput
               style={[
@@ -145,30 +164,37 @@ const styles = StyleSheet.create({
   inputWrapper: {
   position: "relative",
   maxWidth: 520,
-  marginBottom: 18,
+  //marginBottom: 18,
 },
 
 focusGlow: {
   position: "absolute",
-
   // 3px outside the TextInput
   top: -3,
   left: -3,
   right: -3,
   bottom: 15,
-
   borderWidth: 3,
   borderRadius: 13,
-
   borderColor: "rgba(58,123,213,0.15)",
 },
 
 errorFocusGlow: {
+  position: "absolute",
+  // 3px outside the TextInput
+  top: -3,
+  left: -3,
+  right: -3,
+  bottom: 1.9,
+  borderWidth: 3,
+  borderRadius: 13,
   borderColor: "rgba(198,40,40,0.12)",
 },
+
   inputContainer: {
     position: "relative",
   },
+
   input: {
     maxWidth: 520,
     minHeight: 43,
@@ -183,9 +209,11 @@ errorFocusGlow: {
     paddingTop: 12,
     paddingBottom: 13,
   },
+
   inputFocused: {
-    borderColor: "#3a7bd5",
+    borderColor: colorPlater.color.focusGlow,
   },
+
   inputError: {
     maxWidth: 520,
     minHeight: 43,
@@ -205,6 +233,7 @@ errorFocusGlow: {
     marginTop: -13,
     marginBottom: 16,
   },
+
   belowInputError: {
     marginTop: -1,
     marginBottom: 3,

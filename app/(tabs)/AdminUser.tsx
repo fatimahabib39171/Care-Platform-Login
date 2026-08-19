@@ -82,7 +82,7 @@ export default function AdminUser() {
       return;
     }
 
-    router.navigate("/(tabs)/SecurityQuestions");
+    router.push("/(tabs)/SecurityQuestions");
   };
 
   return (

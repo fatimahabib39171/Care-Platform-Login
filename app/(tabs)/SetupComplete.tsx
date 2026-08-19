@@ -39,7 +39,7 @@ export default function SetupComplete() {
             </Text>
 
             <Pressable
-              onPress={() => router.navigate("/(tabs)")}
+              onPress={() => router.push("/(tabs)")}
               style={({ hovered, pressed }) => [
                 styles.button,
                 hovered && styles.buttonHover,

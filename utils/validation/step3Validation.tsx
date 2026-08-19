@@ -19,11 +19,11 @@ export function step3Validation(form: FormData): FormErrors {
     errors.question1 = "Please select a question.";
   }
 
-  if (!form.answer1) {
+  if (!form.answer1.trim()) {
     errors.answer1 = "Answer is required.";
   }
 
-  if (!form.question2) {
+  if (!form.question2.trim()) {
     errors.question2 = "Please select a question.";
   }
 

@@ -10,7 +10,9 @@ import {
 } from "@expo-google-fonts/roboto";
 import { useFonts } from "expo-font";
 
-export function RootLayout() {
+export default function TabLayout() {
+  const colorScheme = useColorScheme();
+
   const [fontsLoaded] = useFonts({
     Roboto: Roboto_400Regular,
     RobotoMedium: Roboto_500Medium,
@@ -21,16 +23,14 @@ export function RootLayout() {
     return null;
   }
 
-  return null;
-}
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Stack
       screenOptions={{
         headerShown: false,
+        animation: "fade",
+        animationDuration: 400,
+        gestureEnabled: true,
+        
       }}
     />
   );

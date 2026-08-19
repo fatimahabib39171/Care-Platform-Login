@@ -55,7 +55,7 @@ export default function ScreenLayout({ children }: ScreenLayoutProps) {
           <Pressable
             style={[styles.tab, isSignInActive && styles.activeTab]}
             onPress={() => {
-              router.navigate("/(tabs)");
+              router.push("/(tabs)");
             }}
           >
             <Text
@@ -68,7 +68,7 @@ export default function ScreenLayout({ children }: ScreenLayoutProps) {
           <Pressable
             style={[styles.tab, isFirstTimeSetupActive && styles.activeTab]}
             onPress={() => {
-              router.navigate(lastSetupStep);
+              router.push(lastSetupStep);
             }}
           >
             <Text

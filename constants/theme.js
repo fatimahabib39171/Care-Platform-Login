@@ -19,6 +19,8 @@ export const colorPlater = {
     line: "#E2E9F2",
     checkerBorder: "#CBD5E1",
     backgroundCard: "#F8FAFC",
+    focusGlow: "#3a7bd5",
+
   },
 
   gradient: {

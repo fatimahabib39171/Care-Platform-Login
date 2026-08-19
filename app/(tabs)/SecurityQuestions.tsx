@@ -29,20 +29,23 @@ export default function SecurityQuestions() {
     answer2: "",
   });
 
+  const securityQuestions = [
+  "What is your mother's maiden name?",
+  "What was the name of your first pet?",
+  "What city were you born in?",
+  "What is your favourite food?",
+];
+
   const inserts = useSafeAreaInsets();
 
   const [showSuccess, setShowSuccess] = useState(false);
-
   const [errors, setErrors] = useState<FormErrors>({});
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   const updateField = (field: keyof FormData, value: string) => {
     const updateForm = { ...form, [field]: value };
-
     setForm(updateForm);
-
     const validationErrors = step3Validation(updateForm);
-
     setErrors((prev) => ({
       ...prev,
       [field as keyof FormErrors]: validationErrors[field as keyof FormErrors],
@@ -51,20 +54,15 @@ export default function SecurityQuestions() {
 
   const handleNext = () => {
     const validationErrors = step3Validation(form);
-
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-
       setShowSuccess(true);
-
       setTimeout(() => {
         setShowSuccess(false);
       }, 3000);
-
       return;
     }
-
-    router.navigate("/(tabs)/SetupComplete");
+    router.push("/(tabs)/SetupComplete");
   };
 
   return (
@@ -94,12 +92,7 @@ export default function SecurityQuestions() {
               setActiveDropdown={setActiveDropdown}
               selectItem={true}
               dropdownId="Q1"
-              options={[
-                "What is your mother's maiden name?",
-                "What was the name of your first pet?",
-                "What city were you born in?",
-                "What is your favourite food?",
-              ]}
+              options={securityQuestions.filter((question) => question !== form.question2)}
               value={form.question1}
               onSelect={(value) => updateField("question1", value)}
               error={errors.question1}
@@ -124,12 +117,7 @@ export default function SecurityQuestions() {
               setActiveDropdown={setActiveDropdown}
               selectItem={true}
               dropdownId="Q2"
-              options={[
-                "What is your mother's maiden name?",
-                "What was the name of your first pet?",
-                "What city were you born in?",
-                "What is your favourite food?",
-              ]}
+              options={securityQuestions.filter((question) => question !== form.question1)}
               value={form.question2}
               onSelect={(value) => updateField("question2", value)}
               error={errors.question2}
