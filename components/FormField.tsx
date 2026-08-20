@@ -23,6 +23,7 @@ type FormFieldProps = TextInputProps & {
   options?: string[];
   onSelect?: (value: string) => void;
   belowInput?: ReactNode;
+  onDropdownBlur?: () => void;
 };
 
 export default function FormField({
@@ -38,6 +39,7 @@ export default function FormField({
   options = [],
   onSelect,
   belowInput,
+  onDropdownBlur,
 
   ...inputProps
 }: FormFieldProps) {
@@ -78,6 +80,7 @@ export default function FormField({
           }}
           onOpen={() => setIsFocused(true)}
           onClose={() => setIsFocused(false)}
+          onDropdownBlur={onDropdownBlur}
         />
 
         </View>
@@ -89,49 +92,53 @@ export default function FormField({
               style={[
                 styles.focusGlow,
                 error && styles.errorFocusGlow,
-              ]}
+                ]}
             />
           )}
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={[
-                styles.input,
-                error && styles.inputError,
-                isFocused && !error && styles.inputFocused,
-              ]}
-              placeholder={placeholderText}
-              placeholderTextColor={colorPlater.color.cardLabel}
-              {...inputProps}
-              secureTextEntry={isPassword ? !showPass : false}
-              onFocus={(e) => {
-                setIsFocused(true);
-                inputProps.onFocus?.(e);
-              }}
-              onBlur={(e) => {
-                setIsFocused(false);
-                inputProps.onBlur?.(e);
-              }}
-          />
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={[
+                  styles.input,
+                  error && styles.inputError,
+                  isFocused && !error && styles.inputFocused,
+                ]}
+                placeholder={placeholderText}
+                placeholderTextColor={colorPlater.color.cardLabel}
+                {...inputProps}
+                secureTextEntry={isPassword ? !showPass : false}
+                onFocus={(e) => {
+                  setIsFocused(true);
+                  inputProps.onFocus?.(e);
+                }}
+                onBlur={(e) => {
+                  setIsFocused(false);
+                  inputProps.onBlur?.(e);
+                }}
+              />
 
-          {isPassword && (
-            <Pressable
-              style={styles.showBtn}
-              onPress={() => setShowPass(!showPass)}
-            >
-              <Text style={styles.showBtnText}>
-                {showPass ? "HIDE" : "SHOW"}
-              </Text>
-            </Pressable>
-          )}
-        </View>
+              {isPassword && (
+                <Pressable
+                  style={styles.showBtn}
+                  onPress={() => setShowPass(!showPass)}
+                >
+                  <Text style={styles.showBtnText}>
+                    {showPass ? "HIDE" : "SHOW"}
+                  </Text>
+                </Pressable>
+              )}
+            </View>
         </View>
       )}
+      
       {belowInput && (
-        <View style={error ? styles.belowInputError : styles.belowInput}>
+        <View style={styles.belowInput}>
           {belowInput}
         </View>
       )}
+
       {error && <Text style={styles.error}>{error}</Text>}
+
+      <View style={styles.fieldSpacing} />
     </View>
   );
 }
@@ -173,7 +180,7 @@ focusGlow: {
   top: -3,
   left: -3,
   right: -3,
-  bottom: 15,
+  bottom: -3,
   borderWidth: 3,
   borderRadius: 13,
   borderColor: "rgba(58,123,213,0.15)",
@@ -185,7 +192,7 @@ errorFocusGlow: {
   top: -3,
   left: -3,
   right: -3,
-  bottom: 1.9,
+  bottom: -3,
   borderWidth: 3,
   borderRadius: 13,
   borderColor: "rgba(198,40,40,0.12)",
@@ -204,11 +211,12 @@ errorFocusGlow: {
     borderWidth: 1,
     borderRadius: 10,
     backgroundColor: colorPlater.color.input,
-    marginBottom: 18,
+    //marginBottom: 18,
     paddingHorizontal: 14,
     paddingTop: 12,
     paddingBottom: 13,
-  },
+    outlineStyle: "none",
+  }as any,
 
   inputFocused: {
     borderColor: colorPlater.color.focusGlow,
@@ -226,18 +234,20 @@ errorFocusGlow: {
     paddingHorizontal: 14,
     paddingTop: 12,
     paddingBottom: 13,
-    marginBottom: 5,
+    //marginBottom: 5,
   },
   
   belowInput: {
-    marginTop: -13,
-    marginBottom: 16,
+    // marginTop: -13,
+    // marginBottom: 16,
+    marginTop: 4,
+    marginBottom: -3,    
   },
 
-  belowInputError: {
-    marginTop: -1,
-    marginBottom: 3,
-  },
+  // belowInputError: {
+  //   marginTop: -1,
+  //   marginBottom: 3,
+  // },
 
   error: {
     color: colorPlater.color.cardRequired,
@@ -246,8 +256,15 @@ errorFocusGlow: {
     fontStyle: "normal",
     fontWeight: 500,
     lineHeight: 14.4,
-    marginBottom: 17,
+
+    marginTop: 5,
+    marginBottom: 0,
+    //marginBottom: 17,
   },
+
+  fieldSpacing: {
+    height: 18,
+},
 
   showBtnText: {
     color: colorPlater.color.showbutton,

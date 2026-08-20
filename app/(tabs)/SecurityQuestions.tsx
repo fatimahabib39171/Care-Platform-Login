@@ -37,7 +37,6 @@ export default function SecurityQuestions() {
 ];
 
   const inserts = useSafeAreaInsets();
-
   const [showSuccess, setShowSuccess] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -65,7 +64,7 @@ export default function SecurityQuestions() {
     router.push("/(tabs)/SetupComplete");
   };
 
-    const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const handleBlur = (
     field: keyof FormData,
     fieldName: string
@@ -75,6 +74,18 @@ export default function SecurityQuestions() {
       [field]: true,
     }));
   
+    if (!form[field]?.trim()) {
+      setErrors((prev) => ({
+        ...prev,
+        [field]: `${fieldName} is required.`,
+      }));
+    }
+  };
+
+  const handleDropdownBlur = (
+    field: keyof FormData,
+    fieldName: string
+  ) => {
     if (!form[field]?.trim()) {
       setErrors((prev) => ({
         ...prev,
@@ -114,7 +125,7 @@ export default function SecurityQuestions() {
               value={form.question1}
               onSelect={(value) => updateField("question1", value)}
               error={errors.question1}
-              onBlur={() => handleBlur("question1", "Question")}
+              onDropdownBlur={() => handleDropdownBlur("question1", "Question")}
             />
 
             <FormField
@@ -141,7 +152,7 @@ export default function SecurityQuestions() {
               value={form.question2}
               onSelect={(value) => updateField("question2", value)}
               error={errors.question2}
-              onBlur={() => handleBlur("question2", "Question")}
+              onDropdownBlur={() => handleDropdownBlur("question2", "Question")}
             />
 
             <FormField
@@ -211,13 +222,11 @@ const styles = StyleSheet.create({
     flex: 1,
     width: 114,
     minHeight: 18,
-
     padding: 14,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
     backgroundColor: colorPlater.color.button,
-    //gap: 8,
   },
   nextBtnText: {
     color: colorPlater.color.textCard,
@@ -234,7 +243,6 @@ const styles = StyleSheet.create({
     minHeight: 46,
     justifyContent: "center",
     alignItems: "center",
-    //gap: 8,
     borderRadius: 10,
     backgroundColor: colorPlater.color.defaultBtn,
     padding: 14,
@@ -254,10 +262,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 12,
   },
-
   errorBoxView: {
     position: "absolute",
-    //bottom: 45,
     width: "90%",
     alignSelf: "center",
     alignItems: "center",
@@ -272,17 +278,14 @@ const styles = StyleSheet.create({
     backgroundColor: colorPlater.color.Primary,
     marginHorizontal: 70,
   },
-
   errorText: {
     color: colorPlater.color.textCard,
     fontSize: 14,
     fontWeight: "400",
   },
-
   buttonHover: {
     backgroundColor: colorPlater.color.Primary,
   },
-
   buttonPressed: {
     opacity: 1,
     transform: [{ scale: 0.97 }],

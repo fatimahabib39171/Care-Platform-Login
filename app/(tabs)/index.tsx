@@ -10,12 +10,7 @@ import {
   Text,
   View,
 } from "react-native";
-import Animated, {
-  FadeIn,
-  FadeOut,
-} from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import FormField from "../../components/FormField";
 import ScreenLayout from "../../components/ScreenLayout";
@@ -97,12 +92,6 @@ export default function App() {
   };
 
   return (
-    /*<Animated.View
-        entering={FadeIn.duration(300)}
-        exiting={FadeOut.duration(250)}
-        style={styles.saveArea}
-      >*/
-
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -219,8 +208,6 @@ export default function App() {
         </View>
       )}
     </KeyboardAvoidingView>
-    /*</Animated.View>*/
-
   );
 }
 
@@ -244,7 +231,6 @@ const styles = StyleSheet.create({
     fontStyle: "normal",
     fontWeight: 700,
     lineHeight: 24,
-
     marginTop: 20,
     marginBottom: 3,
   },
@@ -255,7 +241,6 @@ const styles = StyleSheet.create({
     fontStyle: "normal",
     fontWeight: 400,
     lineHeight: 15.6,
-
     marginBottom: 19,
   },
   checkView: {
@@ -269,7 +254,6 @@ const styles = StyleSheet.create({
     minHeight: 16,
     marginRight: 8,
     borderWidth: 1,
-
     borderColor: colorPlater.color.checkBox,
     borderRadius: 3,
     alignContent: "center",
@@ -290,10 +274,6 @@ const styles = StyleSheet.create({
     height: 14,
     bottom: 1,
     left: 0.5,
-    //padding: 1,
-    //position: "absolute",
-    //backgroundColor: "red",
-    //margin: 1,
   },
   rmbtn: {
     color: colorPlater.color.cardLabel,
@@ -302,9 +282,6 @@ const styles = StyleSheet.create({
     fontStyle: "normal",
     fontWeight: 600,
     lineHeight: 15.6,
-
-    //marginTop: 18,
-    //marginBottom: 17.7,
   },
   button: {
     flex: 1,
@@ -343,9 +320,6 @@ const styles = StyleSheet.create({
 
   successBox: {
     position: "absolute",
-    //bottom: 45,
-    // left: 120,
-    // right: 120,
     alignSelf: "center",
     width: "90%",
     maxWidth: 170,
@@ -366,7 +340,6 @@ const styles = StyleSheet.create({
 
   errorBoxView: {
     position: "absolute",
-    //bottom: 45,
     width: "90%",
     alignSelf: "center",
     alignItems: "center",

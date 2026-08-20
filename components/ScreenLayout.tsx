@@ -4,7 +4,6 @@ import { ReactNode } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colorPlater, font } from "../constants/theme";
-import { FadeCard } from "@/components/FadeCard";
 
 type ScreenLayoutProps = {
   children: ReactNode;
@@ -18,9 +17,7 @@ let lastSetupStep:
 
 export default function ScreenLayout({ children }: ScreenLayoutProps) {
   const pathname = usePathname();
-
   const isSignInActive = pathname === "/" || pathname === "/index";
-
   const isFirstTimeSetupActive =
     pathname === "/FirstTimeSetup" ||
     pathname === "/AdminUser" ||
@@ -32,7 +29,7 @@ export default function ScreenLayout({ children }: ScreenLayoutProps) {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.header}>
           <LinearGradient
@@ -92,13 +89,12 @@ export default function ScreenLayout({ children }: ScreenLayoutProps) {
           <Text style={styles.footerTextView}>Care-Platform Web</Text>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    //flex: 1,
     backgroundColor: colorPlater.color.background,
     width: "auto",
     height: "auto",
@@ -133,7 +129,6 @@ const styles = StyleSheet.create({
     lineHeight: 14.4,
   },
   tabsView: {
-    //flex: 1,
     flexDirection: "row",
     gap: 12,
     paddingHorizontal: 16,

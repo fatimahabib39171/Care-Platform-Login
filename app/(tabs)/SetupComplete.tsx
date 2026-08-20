@@ -8,14 +8,12 @@ import { colorPlater, font } from "../../constants/theme";
 
 export default function SetupComplete() {
   const inserts = useSafeAreaInsets();
-
   const [showSuccess, setShowSuccess] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSuccess(false);
     }, 3000);
-
     return () => clearTimeout(timer);
   }, []);
 
@@ -138,9 +136,6 @@ const styles = StyleSheet.create({
 
   successBox: {
     position: "absolute",
-    //bottom: 45,
-    // left: 120,
-    // right: 120,
     alignSelf: "center",
     width: "90%",
     maxWidth: 170,

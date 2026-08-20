@@ -2,10 +2,7 @@ import CardHeading from "@/components/CardHeading";
 import { colorPlater, font } from "@/constants/theme";
 import { router } from "expo-router";
 import { useState } from "react";
-import Animated, {
-  FadeIn,
-  FadeOut,
-} from "react-native-reanimated";
+import { sendPost } from "@/services/API";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -25,7 +22,45 @@ import {
   FormErrors,
   step1Validation,
 } from "../../utils/validation/step1Validation";
+
 export default function FirstTimeSetup() {
+
+  const handleSetup = async () => {
+  try {
+    const now = new Date();
+    const installationDate = now.toISOString();
+    const expiryDate = new Date(now); 
+    expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+    const createdDate = now.toISOString();
+
+    const data = {
+      Organization: {
+        OrganizationsID: "NUHMedicalCentreVF1fPkGjT0q0R3w5m0vX3w==",
+        Name: form.organisationName,
+        Department: "",
+        OrganizationType: form.type,
+        Others: "",
+        Address: form.address,
+        CityState: form.cityState,
+        Country: form.country,
+        PostalCode: form.postalCode,
+        Email: form.email,
+        Phone: form.phone,
+        TimeZone: form.timeZone,
+        Description: form.description,
+        InstallationDate: installationDate,
+        ExpiryDate: expiryDate.toISOString(),
+        CreatedDate: createdDate,
+      },
+    };
+      const result = await sendPost(data);
+
+    console.log("Setup successful:", result);
+  } catch (error) {
+    console.error("Setup failed:", error);
+  }
+};
+
   const [form, setForm] = useState<FormData>({
     organisationName: "",
     type: "",
@@ -39,26 +74,20 @@ export default function FirstTimeSetup() {
     description: "",
   });
   const inserts = useSafeAreaInsets();
-
   const [showError, setShowError] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
-    const [touched, setTouched] = useState<Record<string, boolean>>({});
-
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   const { width } = useWindowDimensions();
   const isMobile = width < 600;
   //const isTablet = width >= 600 && width < 1000;
   //const isDesktop = width >= 1000;
 
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-
   const updateField = (field: keyof FormData, value: string) => {
     const updateForm = { ...form, [field]: value };
-
     setForm(updateForm);
-
     const validationErrors = step1Validation(updateForm);
-
     setErrors((prev) => ({
       ...prev,
       [field as keyof FormErrors]: validationErrors[field as keyof FormErrors],
@@ -67,19 +96,14 @@ export default function FirstTimeSetup() {
 
   const handleNext = () => {
     const validationErrors = step1Validation(form);
-
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-
       setShowError(true);
-
       setTimeout(() => {
         setShowError(false);
       }, 3000);
-
       return;
     }
-
     router.push("/(tabs)/AdminUser");
   };
 
@@ -99,6 +123,18 @@ export default function FirstTimeSetup() {
     }));
   }
 };
+
+const handleDropdownBlur = (
+    field: keyof FormData,
+    fieldName: string
+  ) => {
+    if (!form[field]?.trim()) {
+      setErrors((prev) => ({
+        ...prev,
+        [field]: `${fieldName} is required.`,
+      }));
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -143,7 +179,7 @@ export default function FirstTimeSetup() {
                   selectItem={true}
                   activeDropdown={activeDropdown}
                   setActiveDropdown={setActiveDropdown}
-                  onBlur={() => handleBlur("type", "Type")}
+                  onDropdownBlur={() => handleDropdownBlur("type", "Type")}
                   dropdownId="Type"
                   options={[
                     "Hospital",
@@ -167,7 +203,7 @@ export default function FirstTimeSetup() {
                   selectItem={true}
                   activeDropdown={activeDropdown}
                   setActiveDropdown={setActiveDropdown}
-                  onBlur={() => handleBlur("timeZone", "Time zone")}
+                  onDropdownBlur={() => handleDropdownBlur("timeZone", "Time zone")}
                   dropdownId="TimeZone"
                   options={[
                     "UTC+05:00 Karachi / Islamabad",

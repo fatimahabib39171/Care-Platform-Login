@@ -1,5 +1,5 @@
-import { colorPlater } from "@/constants/theme";
-import { useState } from "react";
+import { colorPlater, font } from "@/constants/theme";
+import { useState, useEffect, useRef } from "react";
 import {
   Modal,
   Pressable,
@@ -7,6 +7,7 @@ import {
   Text,
   useWindowDimensions,
   View,
+  ScrollView,
 } from "react-native";
 
 type SelectionProps = {
@@ -19,6 +20,7 @@ type SelectionProps = {
   setActiveDropdown: React.Dispatch<React.SetStateAction<string | null>>;
   onOpen?: () => void;
   onClose?: () => void;
+  onDropdownBlur?: () => void;
 };
 
 export function Selection({
@@ -31,6 +33,7 @@ export function Selection({
   setActiveDropdown,
   onOpen,
   onClose,
+  onDropdownBlur
 }: SelectionProps) {
   const [selected, setSelected] = useState("");
   const [dropdownPosition, setDropdownPosition] = useState({
@@ -39,13 +42,22 @@ export function Selection({
     width: 0,
   });
   const { width: screenWidth } = useWindowDimensions();
-
+  const [hoveredOption, setHoveredOption] = useState<string | null>(null);
   const isOpen = activeDropdown === dropdownId;
+
+  const wasOpen = useRef(false);
+    useEffect(() => {
+      if (wasOpen.current && !isOpen && !selected) {
+        onDropdownBlur?.();
+      }
+      wasOpen.current = isOpen;
+    }, [isOpen, selected]);
 
   const openDropdown = () => {
     if (isOpen) {
       setActiveDropdown(null);
       onClose?.();
+      if (!selected) {onDropdownBlur?.(); }
       return;
     }
     setActiveDropdown(dropdownId);
@@ -127,18 +139,27 @@ export function Selection({
               },
             ]}
           >
+
+            <ScrollView
+              showsVerticalScrollIndicator={true}
+              nestedScrollEnabled={true}
+            >
             {dropdownOptions.map((option, index) => (
               <Pressable
                 key={option}
                 style={[
                   styles.option,
+                  hoveredOption === option && styles.optionHover,
                   index === options.length && styles.lastOption,
                 ]}
                 onPress={() => handleSelect(option)}
+                onHoverIn={() => setHoveredOption(option)}
+                onHoverOut={() => setHoveredOption(null)}
               >
-                <Text style={styles.optionText}>{option}</Text>
+                <Text style={[styles.optionText,  hoveredOption === option && styles.optionTextHover,]}>{option}</Text>
               </Pressable>
             ))}
+            </ScrollView>
           </View>
         </View>
       </Modal>
@@ -166,7 +187,7 @@ const styles = StyleSheet.create({
     backgroundColor: colorPlater.color.input,
     borderColor: colorPlater.color.inputBorder,
 
-    marginBottom: 18,
+    //marginBottom: 18,
     paddingHorizontal: 14,
     paddingTop: 12,
     paddingBottom: 13,
@@ -183,7 +204,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingTop: 12,
     paddingBottom: 13,
-    marginBottom: 5,
+    //marginBottom: 5,
   },
 
   inputText: {
@@ -194,7 +215,9 @@ const styles = StyleSheet.create({
   error: {
     color: colorPlater.color.cardRequired,
     fontSize: 12,
-    marginBottom: 17,
+    marginTop: 5,
+    marginBottom: 0,
+    //marginBottom: 17,
     // fontFamily: font.family,
     // fontStyle: "normal",
     // fontWeight: 500,
@@ -206,11 +229,12 @@ const styles = StyleSheet.create({
   },
 
   dropdown: {
+    height: 200,
     position: "absolute",
     // top: 48,
     // left: 0,
     // right: 0,
-    marginTop: -17,
+    marginTop: 3,
     borderWidth: 0.5,
     borderColor: colorPlater.color.cardLabel,
     //borderRadius: 10,
@@ -232,7 +256,7 @@ const styles = StyleSheet.create({
     backgroundColor: colorPlater.color.inputError,
     borderColor: colorPlater.color.cardLabel,
     borderWidth: 0.5,
-    marginTop: -3,
+    marginTop: 3,
   },
 
   option: {
@@ -248,6 +272,7 @@ const styles = StyleSheet.create({
   },
 
   optionText: {
+    fontFamily: font.family,
     fontSize: 14,
     color: colorPlater.color.cardLabel,
   },
@@ -255,5 +280,13 @@ const styles = StyleSheet.create({
   inputFocused: {
     borderColor: colorPlater.color.focusGlow,
 
+  },
+
+  optionHover: {
+  backgroundColor: colorPlater.color.focusGlow,
+},
+
+  optionTextHover: {
+    color: "#FFFFFF",
   },
 });
