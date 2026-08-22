@@ -327,8 +327,9 @@ const handleDropdownBlur = (
 
             <Pressable
               onPress={handleNext}
-              style={({ pressed }) => [
+              style={({ hovered, pressed }) => [
                 styles.button,
+                hovered && styles.buttonHover, 
                 pressed && styles.buttonPressed,
               ]}
             >

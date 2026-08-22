@@ -8,121 +8,90 @@ import { colorPlater, font } from "../../constants/theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { sendFirstTimeSetup } from "@/services/API";
 
+type SetupResponse = {
+  status?: string;
+  message?: string;
+  data?: any;
+};
+
 export default function SetupComplete() {
-  const inserts = useSafeAreaInsets();
-  const [showSuccess, setShowSuccess] = useState(false);
+  const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [setupSuccess, setSetupSuccess] = useState(false);
-  const [apiResponse, setApiResponse] = useState<any>(null);
+  const [setupData, setSetupData] = useState<SetupResponse | null>(null);
+  const [showData, setShowData] = useState(false);
+  
+  const [organization, setOrganization] = useState<any>(null);
+  const [userMaster, setUserMaster] = useState<any>(null);
+  const [securityQuestion, setSecurityQuestion] = useState<any>(null);
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-     if (!setupSuccess) return;
-    const timer = setTimeout(() => {
-      setShowSuccess(false);
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, [setupSuccess]);
+  useEffect(() => { loadSetupData(); }, []);
 
-
-const handleCompleteSetup = async () => {
-  if (loading) return;
-
+  const loadSetupData = async () => {
   try {
     setLoading(true);
-    setMessage("");
-    setSetupSuccess(false);
 
-    const organizationString =
-      await AsyncStorage.getItem("organizationData");
+    const saved = await AsyncStorage.getItem("setupResponse");
 
-    const userString =
-      await AsyncStorage.getItem("userMasterData");
+    console.log("SAVED SETUP RESPONSE:", saved);
 
-    if (!organizationString || !userString) {
-      setMessage("Setup data is missing. Please go back and complete all steps.");
+    if (!saved) {
+      setError("No setup data found.");
       return;
     }
 
-    const organization = JSON.parse(organizationString);
-    const userMaster = JSON.parse(userString);
+    const response = JSON.parse(saved);
 
-    const createdDate = new Date().toISOString();
-    const securityQuestion = userMaster.SecurityQuestion || {
-      SecurityQuestionID: 0,
-      Question: "",
-      Answer: "",
-    };
+    console.log(
+      "PARSED SETUP RESPONSE:",
+      JSON.stringify(response, null, 2)
+    );
 
-    const payload = {
-      Organization: organization,
-
-      UserMaster: {
-        ...userMaster,
-        CreatedDate:
-          userMaster.CreatedDate ||
-          createdDate,
-      },
-
-      SecurityQuestion: securityQuestion,
-
-      OrgDevice: {
-        OrganizationID: 0,
-        ProductDeviceID: 0,
-        CreatedDate: createdDate,
-      },
-
-      ProductDevice: {
-        SystemType: "H-Man",
-        Model: "HMan2024",
-        CreatedDate: createdDate,
-      },
-
-      OrganizationAccessories: [],
-    };
-
-    console.log( "================================" );
-    console.log("FIRST TIME SETUP PAYLOAD");
-    console.log( JSON.stringify( payload, null, 2 ) );
-    console.log( "================================" );
-
-    const result = await sendFirstTimeSetup(payload);
-
-    console.log("API RESPONSE:", result );
-
-  if (result.status === "success") {
-  setSetupSuccess(true);
-  setShowSuccess(true);
-
-  // Store the COMPLETE API response
-  setApiResponse(result);
-
-  setMessage("Setup completed successfully!");
-
-  await AsyncStorage.multiRemove([
-    "organizationData",
-    "userMasterData",
-  ]);
-}
-
-  } 
-  catch (error) {
-      console.error(
-        "First Time Setup Error:",
-        error
-      );
-
-      setMessage(
-        "Something went wrong while completing setup."
-      );
-  } 
-  finally {
+    setSetupData(response);
+  } catch (error) {
+    console.error("LOAD ERROR:", error);
+    setError("Unable to load setup information.");
+  } finally {
     setLoading(false);
   }
 };
 
+  const renderField = ( label: string, value: any ) => {
+    if (
+      value === undefined ||
+      value === null ||
+      value === ""
+    ) { return null; }
+
+    return (
+      <View style={styles.fieldRow}>
+        <Text style={styles.fieldLabel}>{label}</Text>
+        <Text style={styles.fieldValue}>{String(value)}</Text>
+      </View>
+    );
+  };
+
+  const renderSection = ( title: string, children: React.ReactNode ) => {
+    return (
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{title}</Text>{children}
+      </View>
+    );
+  };
+
+   if (loading) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.loadingScreen}>
+          <ActivityIndicator size="large" color={colorPlater.color.doneBtn} />
+          <Text style={styles.loadingText}> Loading setup information... </Text>
+        </View>
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingBottom: insets.bottom, },]}>
       <ScrollView
               keyboardShouldPersistTaps="handled"
               contentContainerStyle={styles.scrollContent}
@@ -133,154 +102,160 @@ const handleCompleteSetup = async () => {
         </View>
         <View>
           <View style={styles.cardView}>
-            {!setupSuccess && (
-              <>
-                <View style={styles.card}>
-                  <View style={styles.isDone}>
-                    <Text style={styles.isDoneText}>✓</Text>
-                  </View>
+            <View style={styles.card}>
+              <View style={styles.successCircle}>
+                <Text style={styles.successIcon}>✓</Text>
+              </View>
+            </View>
+            <Text style={styles.complete}>Setup Complete!</Text>
+            <Text style={styles.readyText}>Your organisation and admin account have been successfully created.</Text>
+            
+            {error !== "" && (
+                <View style={styles.errorBox}>
+                  <Text style={styles.errorText}>{error}</Text>
                 </View>
-                <Text style={styles.complete}>Ready to Complete Setup</Text>
-                <Text style={styles.readyText}>
-                  Your organisation and admin account information has been collected. 
-                  Press the button below to create the records on the server.
-                </Text>
-              </>
-            )}
+              )}
 
-            {setupSuccess && (
-              <>
-                <View style={styles.card}>
-                  <View style={styles.isDone}>
-                    <Text style={styles.isDoneText}>✓</Text>
-                  </View>
+            {setupData && (
+                <View style={styles.statusBox}>
+                  <Text style={styles.statusLabel}>API Status: 
+                  <Text style={styles.statusValue}> {setupData.status || "success"}</Text></Text>
+
+                  {setupData.message && (
+                    <Text style={styles.statusMessage}>{setupData.message}</Text>
+                  )}
                 </View>
-                <Text style={styles.complete}>Setup Complete!</Text>
-                <Text style={styles.readyText}>
-                  Your organisation and admin account are ready. You can now sign
-                  in.
-                </Text>
-              </>
-            )}
+              )}
 
-            {message !== "" && (
-              <View style={[styles.messageBox, setupSuccess ? styles.successMessage : styles.errorMessage,]}
-              >
-                <Text
-                style={[
-                  styles.messageText,
-                  {
-                    textAlign: "left",
-                  },
-                ]}
-              >
-                {message}
-              </Text>
+            {showData && setupData?.data && (
+              <View style={styles.responseContainer}>
+
+                <View style={styles.dataSection}>
+                  <Text style={styles.sectionTitle}>Organization</Text>
+                  <Text>Organization ID: {setupData.data.Organization?.OrganizationsID}</Text>
+                  <Text>Name: {setupData.data.Organization?.Name}</Text>
+                  <Text>Department: {setupData.data.Organization?.Department}</Text>
+                  <Text>Organization Type: {setupData.data.Organization?.OrganizationType}</Text>
+                  <Text>Others: {setupData.data.Organization?.Others}</Text>
+                  <Text>Address: {setupData.data.Organization?.Address}</Text>
+                  <Text>City State: {setupData.data.Organization?.CityState}</Text>
+                  <Text>Country: {setupData.data.Organization?.Country}</Text>
+                  <Text>Postal Code: {setupData.data.Organization?.PostalCode}</Text>
+                  <Text>Email: {setupData.data.Organization?.Email}</Text>
+                  <Text>Phone: {setupData.data.Organization?.Phone}</Text>
+                  <Text>Time Zone: {setupData.data.Organization?.TimeZone}</Text>
+                  <Text>Description: {setupData.data.Organization?.Description}</Text>
+                  <Text>Installation Date: {setupData.data.Organization?.InstallationDate}</Text>
+                  <Text>Expiry Date: {setupData.data.Organization?.ExpiryDate}</Text>
+                  <Text>Created Date: {setupData.data.Organization?.CreatedDate}</Text>
+                </View>
+
+                <View style={styles.dataSection}>
+                  <Text style={styles.sectionTitle}>Admin User</Text>
+                  <Text>First Name: {setupData.data.Organization?.FirstName}</Text>
+                  <Text>Last Name: {setupData.data.Organization?.LastName}</Text>
+                  <Text>Designation: {setupData.data.Organization?.Designation}</Text>
+                  <Text>Email: {setupData.data.Organization?.Email}</Text>
+                  <Text>Phone: {setupData.data.Organization?.Phone}</Text>
+                  <Text>User Role: {setupData.data.Organization?.UserRole}</Text>
+                  <Text>User Name: {setupData.data.Organization?.UserName}</Text>
+                  <Text>Password: {setupData.data.Organization?.Password}</Text>
+                  <Text>Created Date: {setupData.data.Organization?.CreatedDate}</Text>
+                </View>
+
+                <View style={styles.dataSection}>
+                  <Text style={styles.sectionTitle}>Security Questions</Text>
+                  <Text>Question 1: {setupData.data.SecurityQuestion?.Question1}</Text>
+                  <Text>Answer 1: {setupData.data.SecurityQuestion?.Answer1}</Text>
+                  <Text>Question 2: {setupData.data.SecurityQuestion?.Question2}</Text>
+                  <Text>Answer 2: {setupData.data.SecurityQuestion?.Answer2}</Text>
+                </View>
               </View>
             )}
 
-            {setupSuccess && apiResponse && (
-              <View style={styles.apiResponseBox}>
-                <Text style={styles.apiResponseTitle}>
-                  API Response
+            <Pressable onPress={() => setShowData(!showData)}>
+                <Text>
+                  {showData ? "Hide Entered Data" : "View Entered Data"}
                 </Text>
+            </Pressable>
 
-                <Text style={styles.apiResponseText}>
-                  {JSON.stringify(apiResponse, null, 2)}
-                </Text>
-              </View>
-            )}
 
-            {!setupSuccess && (
-              <Pressable onPress={ handleCompleteSetup }
-                disabled={loading}
-                style={({ pressed }) => [ 
-                    styles.button,
-                    pressed && styles.buttonPressed,
-                    loading && styles.buttonDisabled,
-                ]}
-              >
-                {loading ? (
-                  <View style={ styles.loadingContainer } >
-                    <ActivityIndicator color="#fff" size="large"/>
-                    <Text style={ styles.btnText } >Completing...</Text>
-                  </View>
-                ) : (
-                  <Text style={ styles.btnText } >Complete Setup</Text>
-                )}
-              </Pressable>
-            )}
+          {/*  {showData && setupData?.data && (
+                <View style={styles.rawResponseSection}>
+                  <Text style={styles.sectionTitle}>Server Response</Text>
+                  <Text style={styles.rawResponse}>
+                    {typeof setupData.data === "string" ? setupData.data : JSON.stringify( setupData.data, null, 2 )}
+                  </Text>
+                </View>
+              )}
+            */}
 
-            <View style={styles.rowBtns}>
-              {setupSuccess && (
-              <Pressable
-                onPress={() => router.push("/(tabs)")}
+            <Pressable
+                onPress={() => router.replace("/(tabs)") }
                 style={({ hovered, pressed }) => [
                   styles.button,
                   hovered && styles.buttonHover,
                   pressed && styles.buttonPressed,
                 ]}
               >
-                <Text style={styles.btnText}>Go to Login</Text>
+                <Text style={styles.buttonText}>Go to Login</Text>
               </Pressable>
-              )}
-
-              {!setupSuccess && (
-              <Pressable
-                onPress={() => router.back()}
-                style={({pressed}) => [
-                  styles.backButton,
-                  pressed && styles.buttonPressed,
-                ]}
-              >
-                <Text style={styles.backBtnText}>Back</Text>
-              </Pressable>
-              )}
             </View>
           </View>
-        </View>
-      </ScreenLayout>
+        </ScreenLayout>
       </ScrollView>
-
-      {showSuccess && (
-        <View style={[styles.successBox, { bottom: inserts.bottom + 20 }]}>
-          <Text style={styles.successText}>Setup Complete</Text>
-        </View>
-      )}
     </View>
   );
 }
+
 const styles = StyleSheet.create({
+  container: {
+    flex: 1, 
+    backgroundColor: colorPlater.color.background,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 40,
+  },
+
   stepperView: {
     paddingVertical: 16,
     paddingHorizontal: 73,
   },
+  
   cardView: {
     paddingHorizontal: 24,
-    //paddingBottom: 24,
+    paddingBottom: 24,
   },
-  container: {
-     flex: 1, 
-     backgroundColor: colorPlater.color.background,},
+  
   card: {
+    width: "100%",
+    maxWidth: 700,
     alignSelf: "center",
-    marginTop: 40,
+    padding: 24,
+    borderRadius: 12,
+    backgroundColor: colorPlater.color.textCard,
+    //marginTop: 40,
   },
-  isDone: {
+  successCircle: {
     width: 72,
     height: 72,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 36,
     backgroundColor: colorPlater.color.doneBtn,
+
+    alignSelf: "center",
   },
-  isDoneText: {
+  successIcon: {
     color: colorPlater.color.textCard,
+    fontSize: 36,
+    fontWeight: "700",
+
+    
     fontFamily: font.family,
     textAlign: "center",
-    fontSize: 36,
     fontStyle: "normal",
-    fontWeight: 400,
     lineHeight: 36,
   },
   complete: {
@@ -290,7 +265,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontStyle: "normal",
     fontWeight: 700,
-    lineHeight: 28.8,
+    lineHeight: 29,
     marginBottom: 7,
     marginTop: 16,
   },
@@ -300,159 +275,178 @@ const styles = StyleSheet.create({
     fontFamily: font.family,
     fontSize: 14,
     fontStyle: "normal",
-    fontWeight: 400,
     lineHeight: 16.8,
     marginBottom: 23,
+    //fontWeight: 400,
   },
 
+  statusBox: {
+    width: "100%",
+    padding: 14,
+    borderRadius: 8,
+    backgroundColor: "#E8F5E9",
+    borderWidth: 1,
+    borderColor: "#66BB6A",
+    marginBottom: 20,
+    alignItems: "center",
+  },
+  statusLabel: {
+    fontFamily: font.family,
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#555",
+  },
+  statusValue: {
+    fontFamily: font.family,
+    fontSize: 17,
+    fontWeight: "700",
+    color: "#2E7D32",
+    marginTop: 3,
+  },
+  statusMessage: {
+    fontFamily: font.family,
+    fontSize: 13,
+    color: "#333",
+    marginTop: 5,
+  },
+
+  section: {
+    width: "100%",
+    backgroundColor: "#FAFAFA",
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    borderRadius: 10,
+    padding: 16,
+    marginBottom: 18,
+  },
+  sectionTitle: {
+    fontFamily: font.family,
+    fontSize: 18,
+    fontWeight: "700",
+    color: colorPlater.color.doneBtn,
+    marginBottom: 14,
+  },
+
+  fieldRow: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#EEEEEE",
+    paddingVertical: 9,
+  },
+  fieldLabel: {
+    fontFamily: font.family,
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#777",
+    marginBottom: 3,
+  },
+  fieldValue: {
+    fontFamily: font.family,
+    fontSize: 14,
+    color: "#222",
+    lineHeight: 20,
+  },
+
+  rawResponseSection: {
+    width: "100%",
+    marginBottom: 20,
+  },
+  rawResponse: {
+    fontFamily: "monospace",
+    fontSize: 12,
+    lineHeight: 18,
+    color: "#333",
+    backgroundColor: "#F5F5F5",
+    padding: 12,
+    borderRadius: 8,
+  },
+
+  errorBox: {
+    width: "100%",
+    padding: 14,
+    borderRadius: 8,
+    backgroundColor: "#FFEBEE",
+    borderWidth: 1,
+    borderColor: "#EF5350",
+    marginBottom: 20,
+  },
+  errorText: {
+    fontFamily: font.family,
+    fontSize: 14,
+    color: "#C62828",
+    lineHeight: 20,
+  },
+
+  messageBox: {
+    width: "100%",
+    padding: 14,
+    borderRadius: 8,
+    marginBottom: 20,
+    backgroundColor: "#FFEBEE",
+    borderWidth: 1,
+    borderColor: "#EF5350",
+
+    //maxWidth: 600,
+  },
+  messageText: {
+    fontFamily: font.family,
+    textAlign: "center",
+    fontSize: 14,
+    lineHeight: 20,
+  },
+
+
   button: {
-    flex: 1,
-    // maxWidth: 520,
+    width: "100%",
     minHeight: 45,
     paddingVertical: 13.5,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
     backgroundColor: colorPlater.color.button,
-    marginBottom: 40,
+    marginTop: 5,
+    //marginBottom: 40,
+    //flex: 1,
+    // maxWidth: 520,
   },
-
-  backButton: {
-    flex: 1,
-    //width: 81,
-    minHeight: 45,
-    paddingVertical: 13.5,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 10,
-    backgroundColor: colorPlater.color.defaultBtn,
-    marginBottom: 40,
-  },
-
-  btnText: {
+  buttonText: {
     color: colorPlater.color.textCard,
     textAlign: "center",
     fontFamily: font.family,
     fontSize: 15,
-    fontStyle: "normal",
     fontWeight: 700,
-    lineHeight: 18,
+    //fontStyle: "normal",
+    //lineHeight: 18,
   },
-  backBtnText: {
-    color: colorPlater.color.Primary,
-    textAlign: "center",
-    fontFamily: font.family,
-    fontSize: 15,
-    fontStyle: "normal",
-    fontWeight: 700,
-    lineHeight: 18,
+  buttonPressed: {
+    opacity: 0.8,
+    transform: [{ scale: 0.97 }],
   },
-
-  successBox: {
-    position: "absolute",
-    alignSelf: "center",
-    width: "90%",
-    maxWidth: 170,
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    backgroundColor: colorPlater.color.doneBtn,
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 9999,
-  },
-
-  successText: {
-    color: colorPlater.color.textCard,
-    fontSize: 14,
-    fontWeight: "600",
-  },
-
   buttonHover: {
     backgroundColor: colorPlater.color.Primary,
   },
 
-  buttonPressed: {
-    opacity: 1,
-    transform: [{ scale: 0.97 }],
-  },
-
-  messageBox: {
-    width: "100%",
-    maxWidth: 600,
-    padding: 14,
-    borderRadius: 8,
-    marginBottom: 20,
-  },
-  messageText: {
-    fontFamily: font.family,
-    textAlign: "center",
-  },
-
-  successMessage: {
-    backgroundColor: "#E8F5E9",
-    borderWidth: 1,
-    borderColor: "#66BB6A",
-  },
-
-  errorMessage: {
-    backgroundColor: "#FFEBEE",
-    borderWidth: 1,
-    borderColor: "#EF5350",
-  },
-
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-
-  loadingContainer: {
-    flexDirection: "row",
+  loadingScreen: {
+    flex: 1,
+    justifyContent: "center",
     alignItems: "center",
-    gap: 10,
   },
-
-  scrollContent: {
-    flexGrow: 1,
-    paddingBottom: 30,
+  loadingText: {
+    marginTop: 15,
+    fontFamily: font.family,
+    fontSize: 14,
+    color: "#555",
   },
-
-  rowBtns: {
-    height: 45,
-    alignItems: "flex-end",
-    flexDirection: "row",
-    gap: 12,
-    marginTop: 5,
-  },
-
-  responseContainer: {
+  dataSection: {
   width: "100%",
-  marginBottom: 20,
-},
-
-apiResponseBox: {
-  width: "100%",
-  maxWidth: 600,
   backgroundColor: colorPlater.color.input,
   borderRadius: 10,
   padding: 16,
-  marginBottom: 20,
+  marginBottom: 15,
   borderWidth: 1,
-  borderColor: "#E0E0E0",
+  borderColor: colorPlater.color.inputBorder,
 },
-
-apiResponseTitle: {
-  fontFamily: font.family,
-  fontSize: 18,
-  fontWeight: "700",
-  marginBottom: 12,
-  color: colorPlater.color.doneBtn,
+responseContainer: {
+  width: "100%",
+  marginBottom: 20,
 },
-
-apiResponseText: {
-  fontFamily: font.family,
-  fontSize: 13,
-  lineHeight: 20,
-  color: "#333333",
-},
-
 });

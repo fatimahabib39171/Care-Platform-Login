@@ -21,9 +21,12 @@ import {
   step3Validation,
 } from "../../utils/validation/step3Validation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {sendFirstTimeSetup} from "@/services/API"
 
 
 export default function SecurityQuestions() {
+  const inserts = useSafeAreaInsets();
+
   const [form, setForm] = useState({
     question1: "",
     answer1: "",
@@ -31,17 +34,21 @@ export default function SecurityQuestions() {
     answer2: "",
   });
 
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState<"success" | "error">("error");
+
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
   const securityQuestions = [
   "What is your mother's maiden name?",
   "What was the name of your first pet?",
   "What city were you born in?",
   "What is your favourite food?",
 ];
-
-  const inserts = useSafeAreaInsets();
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   const updateField = (field: keyof FormData, value: string) => {
     const updateForm = { ...form, [field]: value };
@@ -53,55 +60,114 @@ export default function SecurityQuestions() {
     }));
   };
 
-  const [touched, setTouched] = useState<Record<string, boolean>>({});
-  const handleBlur = (
-    field: keyof FormData,
-    fieldName: string
-  ) => {
-    setTouched((prev) => ({
-      ...prev,
-      [field]: true,
-    }));
-  
-    if (!form[field]?.trim()) {
-      setErrors((prev) => ({
-        ...prev,
-        [field]: `${fieldName} is required.`,
-      }));
-    }
+  const showStatusMessage = ( text: string, type: "success" | "error" ) => {
+  setMessage(text);
+  setMessageType(type);
+  setShowSuccess(true);
+  setTimeout(() => {
+    setShowSuccess(false);
+  }, 3000);
+};
+
+
+  const handleBlur = ( field: keyof FormData, fieldName: string ) => {
+    setTouched((prev) => ({ ...prev, [field]: true, }));
+    if (!form[field]?.trim()) { setErrors((prev) => ({ ...prev, [field]: `${fieldName} is required.`, }));}
   };
 
-  const handleDropdownBlur = (
-    field: keyof FormData,
-    fieldName: string
-  ) => {
+  const handleDropdownBlur = ( field: keyof FormData, fieldName: string ) => {
     if (!form[field]?.trim()) {
-      setErrors((prev) => ({
-        ...prev,
-        [field]: `${fieldName} is required.`,
-      }));
-    }
+      setErrors((prev) => ({ ...prev, [field]: `${fieldName} is required.`, })); }
   };
 
-  const [securityQ, setSecurityQ] = useState({
-    Question1: "",
-    Answer1: "",
-    Question2: "",
-    Answer2: "",
-  });
-
-
-  const handleNext = () => {
+  const handleNext = async () => {
+    if (loading) return;
+    
     const validationErrors = step3Validation(form);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      setShowSuccess(true);
-      setTimeout(() => {
-        setShowSuccess(false);
-      }, 3000);
+      showStatusMessage( "Please complete the highlighted fields.", "error" );
       return;
     }
-    router.push("/(tabs)/SetupComplete");
+
+    try {
+      setLoading(true);
+
+      const organizationString = await AsyncStorage.getItem( "organizationData" );
+      const userString = await AsyncStorage.getItem("userMasterData");
+
+    if (!organizationString || !userString) {
+      throw new Error("Setup data is missing. Please go back and complete all steps.");
+    }
+
+    const organization = JSON.parse(organizationString);
+    const userMaster = JSON.parse(userString);
+
+    const createdDate = new Date().toISOString();
+
+    const securityQuestionData = {
+      Question1: form.question1,
+      Answer1: form.answer1,
+      Question2: form.question2,
+      Answer2: form.answer2,
+    };
+
+    const payload = {
+      Organization: organization,
+
+      UserMaster: {
+        ...userMaster,
+        CreatedDate: userMaster.CreatedDate || createdDate,
+      },
+
+      SecurityQuestion: securityQuestionData,
+
+      OrgDevice: {
+        OrganizationID: 0,
+        ProductDeviceID: 0,
+        CreatedDate: createdDate,
+      },
+
+      ProductDevice: {
+        SystemType: "H-Man",
+        Model: "HMan2024",
+        CreatedDate: createdDate,
+      },
+
+      OrganizationAccessories: [],
+    };
+
+    console.log( "FIRST TIME SETUP PAYLOAD:", JSON.stringify(payload, null, 2) );
+    console.log( JSON.stringify(payload, null, 2) );
+
+    const result = await sendFirstTimeSetup(payload);
+
+    console.log("FIRST TIME SETUP RESPONSE:", result);
+
+    if (result.status !== "success") {
+      throw new Error( result.message || "First Time Setup failed" );
+    }
+
+    await AsyncStorage.setItem( "setupResponse", JSON.stringify(result) );
+  
+    await AsyncStorage.setItem( "setupPayload", JSON.stringify(payload) );
+
+    await AsyncStorage.multiRemove([ "organizationData", "userMasterData", ]);
+
+    showStatusMessage( "Setup completed successfully!", "success");
+
+    setTimeout(() => { router.replace( "/(tabs)/SetupComplete" ); }, 500);
+    } 
+    catch (error) {
+      console.error("First Time Setup Error:", error);
+
+      const errorMessage = error instanceof Error ? error.message : "Unable to complete setup.";
+
+      showStatusMessage(  errorMessage, "error" );
+    }
+    finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -114,9 +180,11 @@ export default function SecurityQuestions() {
         contentContainerStyle={styles.scrollContent}
       >
         <ScreenLayout>
+
           <View style={styles.stepperView}>
             <ProgressStepper currentStep={3} totalSteps={4} />
           </View>
+
           <View style={styles.cardView}>
             <CardHeading
               heading="Security Questions"
@@ -176,23 +244,27 @@ export default function SecurityQuestions() {
               error={errors.answer2}
               onBlur={() => handleBlur("answer2", "Answer")}
             />
+
             <View style={styles.rowBtns}>
               <Pressable
                 style={styles.backButton}
                 onPress={() => router.back()}
+                disabled={loading}
               >
                 <Text style={styles.backBtnText}>← Back</Text>
               </Pressable>
 
               <Pressable
                 onPress={handleNext}
+                disabled={loading}
                 style={({ hovered, pressed }) => [
                   styles.nextButton,
                   hovered && styles.buttonHover,
                   pressed && styles.buttonPressed,
+                  loading && styles.disabledButton,
                 ]}
               >
-                <Text style={styles.nextBtnText}>Complete Setup</Text>
+                <Text style={styles.nextBtnText}>{loading ? "Creating..." : "Complete Setup"}</Text>
               </Pressable>
             </View>
           </View>
@@ -200,11 +272,9 @@ export default function SecurityQuestions() {
       </ScrollView>
 
       {showSuccess && (
-        <View style={[styles.errorBoxView, { bottom: inserts.bottom + 20 }]}>
-          <View style={styles.errorBox}>
-            <Text style={styles.errorText}>
-              Please complete the highlighted fields.
-            </Text>
+        <View style={[styles.messageBoxView, { bottom: inserts.bottom + 20 }]}>
+          <View style={[styles.messageBox, messageType === "success" ? styles.successBox : styles.errorBox, ]}>
+            <Text style={styles.messageText}>{message}</Text>
           </View>
         </View>
       )}
@@ -272,7 +342,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 12,
   },
-  errorBoxView: {
+  messageBoxView: {
     position: "absolute",
     width: "90%",
     alignSelf: "center",
@@ -288,7 +358,7 @@ const styles = StyleSheet.create({
     backgroundColor: colorPlater.color.Primary,
     marginHorizontal: 70,
   },
-  errorText: {
+  messageText: {
     color: colorPlater.color.textCard,
     fontSize: 14,
     fontWeight: "400",
@@ -300,4 +370,21 @@ const styles = StyleSheet.create({
     opacity: 1,
     transform: [{ scale: 0.97 }],
   },
+  disabledButton: {
+    opacity: 0.6,
+  },
+
+  messageBox: {
+    maxWidth: 568,
+    paddingVertical: 14,
+    paddingHorizontal: 25,
+    borderRadius: 10,
+    marginHorizontal: 70,
+  },
+
+  successBox: {
+    backgroundColor:
+      colorPlater.color.doneBtn,
+  },
+
 });

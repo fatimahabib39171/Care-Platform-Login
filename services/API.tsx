@@ -59,29 +59,65 @@ export const sendFirstTimeSetup = async (
   data: FirstTimeSetupPayload
 ) => {
   try {
-    const response = await fetch(
-      `${URL}/first-time-setup`,
+    console.log("================================");
+    console.log("FIRST TIME SETUP REQUEST");
+    console.log(JSON.stringify(data, null, 2));
+    console.log("================================");
+
+    const response = await fetch( `${URL}/first-time-setup`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json", },
         body: JSON.stringify(data),
       }
     );
+    const text = await response.text();
 
-    const result = await response.json();
+    console.log("API STATUS:", response.status);
+    console.log("API RAW RESPONSE:", text);
 
-    console.log("API status:", response.status);
-    console.log("API response:", result);
+    let result: any;
+
+    try {
+      result = JSON.parse(text);
+    } catch {
+      result = {
+        status: "error",
+        message: text || "Invalid server response",
+      };
+    }
+
+    console.log(
+      "API PARSED RESPONSE:",
+      JSON.stringify(result, null, 2)
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        result?.message ||
+        result?.error ||
+        `Server returned HTTP ${response.status}`
+      );
+    }
+
+    if (result?.status !== "success") {
+      throw new Error(
+        result?.message ||
+        "First Time Setup failed"
+      );
+    }
 
     return result;
+
   } catch (error) {
-    console.error("First Time Setup API Error:", error);
+    console.error(
+      "First Time Setup API Error:",
+      error
+    );
+
     throw error;
   }
 };
-
 export const loginUser = async (
   OrganizationName: string,
   username: string,
