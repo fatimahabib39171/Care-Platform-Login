@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
   },
 
   dropdown: {
-    height: 200,
+    height: "auto",
     position: "absolute",
     // top: 48,
     // left: 0,
@@ -243,13 +243,7 @@ const styles = StyleSheet.create({
     zIndex: 99999,
     elevation: 99999,
 
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
+    boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.25)",
   },
 
   dropdownError: {

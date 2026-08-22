@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { colorPlater, font } from "@/constants/theme";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -19,14 +20,18 @@ import {
   FormErrors,
   mainValidation,
 } from "../../utils/validation/mainValidation";
+import { loginUser } from "@/services/API";
+import Dashboard from "./Dashboard"
 
 export default function App() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [checked, setChecked] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
   const inserts = useSafeAreaInsets();
 
   const [form, setForm] = useState({
-    organisationName: "",
+    organizationName: "",
     username: "",
     password: "",
   });
@@ -50,7 +55,7 @@ export default function App() {
   const [showForgotSuccess, setShowForgotSuccess] = useState(false);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  const handleSignIn = () => {
+/*  const handleSignIn = () => {
     const validationErrors = mainValidation(form);
 
     if (Object.keys(validationErrors).length > 0) {
@@ -66,7 +71,7 @@ export default function App() {
       setShowSuccess(false);
     }, 3000);
   };
-
+*/
   const handleForgotPassword = () => {
     setShowForgotSuccess(true);
     setTimeout(() => {
@@ -91,6 +96,89 @@ export default function App() {
     }
   };
 
+  const handleLogin = async () => {
+    const { organizationName, username, password } = form;
+
+    const validationErrors = mainValidation(form);
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      setMessage("Please complete the highlighted fields.");
+      setShowError(true);
+
+      setTimeout(() => {
+        setShowError(false);
+      }, 3000);
+
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setMessage("");
+      setShowError(false);
+
+
+      const userData = await loginUser(
+        organizationName.trim(),
+        username.trim(),
+        password
+      );
+
+      console.log("USER DATA:", userData);
+      console.log("USERNAME:", userData.UserName);
+      console.log("ORGANIZATION:", userData.OrganizationName);
+      console.log("JWT TOKEN:", userData.JwtToken);
+
+
+      if (!userData.JwtToken) {
+      throw new Error("Login successful, but JWT token was not received.");
+    }
+
+    // Save user information
+    await AsyncStorage.setItem(
+      "userData",
+      JSON.stringify(userData)
+    );
+
+    // Save JWT token
+    await AsyncStorage.setItem(
+      "jwtToken",
+      userData.JwtToken
+    );
+
+    // Show success message
+    setShowSuccess(true);
+
+    setTimeout(() => {
+      setShowSuccess(false);
+
+      // Navigate to Dashboard
+      router.replace("./Dashboard");
+    }, 1000);
+
+  } catch (error) {
+    console.error("Login Error:", error);
+
+    setMessage(
+      error instanceof Error
+        ? error.message
+        : "Unable to login. Please try again."
+    );
+
+    setShowError(true);
+
+    setTimeout(() => {
+      setShowError(false);
+    }, 3000);
+
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -111,12 +199,12 @@ export default function App() {
               label="Organisation Name "
               required={true}
               placeholderText="e.g. NUH Medical Centre"
-              value={form.organisationName}
-              onChangeText={(text) => updateField("organisationName", text)}
-              error={errors.organisationName}
+              value={form.organizationName}
+              onChangeText={(text) => updateField("organizationName", text)}
+              error={errors.organizationName}
               activeDropdown={null}
               setActiveDropdown={() => {}}
-              onBlur={() => handleBlur("organisationName", "Organisation name")}
+              onBlur={() => handleBlur("organizationName", "Organisation name")}
             />
 
             <FormField
@@ -155,14 +243,16 @@ export default function App() {
             </Pressable>
 
             <Pressable
-              onPress={handleSignIn}
+              onPress={handleLogin}
+              disabled={loading}
               style={({ hovered, pressed }) => [
                 styles.button,
                 hovered && styles.buttonHover,
                 pressed && styles.buttonPressed,
+                loading && {opacity: 0.6},
               ]}
             >
-              <Text style={styles.btnText}>Sign In</Text>
+              <Text style={styles.btnText}>{loading ? "Signing In..." : "Sign In"}</Text>
             </Pressable>
 
             <View style={styles.linkView}>
@@ -193,7 +283,7 @@ export default function App() {
         <View style={[styles.errorBoxView, { bottom: inserts.bottom + 20 }]}>
           <View style={styles.errorBox}>
             <Text style={styles.errorText}>
-              Password reset link sent to your email
+              {message}
             </Text>
           </View>
         </View>
@@ -202,7 +292,8 @@ export default function App() {
         <View style={[styles.errorBoxView, { bottom: inserts.bottom + 20 }]}>
           <View style={styles.errorBox}>
             <Text style={styles.errorText}>
-              Please complete the highlighted fields.
+              {message}
+              {/*Please complete the highlighted fields.*/}
             </Text>
           </View>
         </View>

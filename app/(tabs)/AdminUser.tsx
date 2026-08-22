@@ -11,10 +11,6 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import Animated, {
-  FadeIn,
-  FadeOut,
-} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CardHeading from "../../components/CardHeading";
 import FormField from "../../components/FormField";
@@ -26,8 +22,10 @@ import {
   FormErrors,
   step2Validation,
 } from "../../utils/validation/step2Validation";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function AdminUser() {
+
   const { width } = useWindowDimensions();
   const isMobile = width < 600;
   //const isTablet = width >= 600 && width < 1000;
@@ -76,23 +74,6 @@ export default function AdminUser() {
     symbol: /[!@#$%^&*(),.?":{}|<>_\-[\]\\\/]/.test(password),
   };
 
-  const handleNext = () => {
-    const validationErrors = step2Validation(form);
-
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      setShowError(true);
-
-      setTimeout(() => {
-        setShowError(false);
-      }, 3000);
-
-      return;
-    }
-
-    router.push("/(tabs)/SecurityQuestions");
-  };
-
   const handleBlur = (
     field: keyof FormData,
     fieldName: string
@@ -107,6 +88,49 @@ export default function AdminUser() {
         ...prev,
         [field]: `${fieldName} is required.`,
       }));
+    }
+  };
+
+  const handleNext = async () => {
+    const validationErrors = step2Validation(form);
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      setShowError(true);
+
+      setTimeout(() => {
+        setShowError(false);
+      }, 3000);
+
+      return;
+    }
+
+    try {
+      const createdDate =
+        new Date().toISOString();
+
+      const userMasterData = {
+        FirstName: form.firstName,
+        LastName: form.lastName,
+        Designation: form.designation,
+        Email: form.email,
+        Phone: form.phone,
+        UserRole: "Admin",
+        UserName: form.username,
+        Password: form.password,
+        CreatedDate: createdDate,
+      };
+
+      console.log( "UserMaster Data:", userMasterData );
+
+      await AsyncStorage.setItem( "userMasterData", JSON.stringify(userMasterData));
+
+      console.log("UserMaster data saved successfully");
+
+      router.push("/(tabs)/SecurityQuestions");
+    } 
+    catch (error) {
+      console.error("Failed to save admin user:", error);
     }
   };
 

@@ -20,6 +20,8 @@ import {
   FormErrors,
   step3Validation,
 } from "../../utils/validation/step3Validation";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 export default function SecurityQuestions() {
   const [form, setForm] = useState({
@@ -51,19 +53,6 @@ export default function SecurityQuestions() {
     }));
   };
 
-  const handleNext = () => {
-    const validationErrors = step3Validation(form);
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      setShowSuccess(true);
-      setTimeout(() => {
-        setShowSuccess(false);
-      }, 3000);
-      return;
-    }
-    router.push("/(tabs)/SetupComplete");
-  };
-
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const handleBlur = (
     field: keyof FormData,
@@ -92,6 +81,27 @@ export default function SecurityQuestions() {
         [field]: `${fieldName} is required.`,
       }));
     }
+  };
+
+  const [securityQ, setSecurityQ] = useState({
+    Question1: "",
+    Answer1: "",
+    Question2: "",
+    Answer2: "",
+  });
+
+
+  const handleNext = () => {
+    const validationErrors = step3Validation(form);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 3000);
+      return;
+    }
+    router.push("/(tabs)/SetupComplete");
   };
 
   return (

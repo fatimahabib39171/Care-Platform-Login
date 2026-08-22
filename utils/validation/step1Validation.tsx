@@ -1,5 +1,5 @@
 export type FormData = {
-  organisationName: string;
+  organizationName: string;
   type: string;
   timeZone: string;
   address: string;
@@ -12,7 +12,7 @@ export type FormData = {
 };
 
 export type FormErrors = {
-  organisationName?: string;
+  organizationName?: string;
   type?: string;
   timeZone?: string;
   address?: string;
@@ -25,10 +25,10 @@ export type FormErrors = {
 export function step1Validation(form: FormData): FormErrors {
   const errors: FormErrors = {};
 
-  if (!form.organisationName.trim()) {
-    errors.organisationName = "Organisation name is required.";
-  } else if (form.organisationName.length < 2) {
-    errors.organisationName =
+  if (!form.organizationName.trim()) {
+    errors.organizationName = "Organisation name is required.";
+  } else if (form.organizationName.length < 2) {
+    errors.organizationName =
       "Organisation name must be at least 2 characters.";
   }
 

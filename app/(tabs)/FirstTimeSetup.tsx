@@ -2,7 +2,6 @@ import CardHeading from "@/components/CardHeading";
 import { colorPlater, font } from "@/constants/theme";
 import { router } from "expo-router";
 import { useState } from "react";
-import { sendPost } from "@/services/API";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -22,6 +21,8 @@ import {
   FormErrors,
   step1Validation,
 } from "../../utils/validation/step1Validation";
+import { generateOrgID } from "@/utils/generateOrgID";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function FirstTimeSetup() {
 
@@ -32,11 +33,13 @@ export default function FirstTimeSetup() {
     const expiryDate = new Date(now); 
     expiryDate.setFullYear(expiryDate.getFullYear() + 1);
     const createdDate = now.toISOString();
+    const organizationsID = generateOrgID(
+      form.organizationName
+    );
 
-    const data = {
-      Organization: {
-        OrganizationsID: "NUHMedicalCentreVF1fPkGjT0q0R3w5m0vX3w==",
-        Name: form.organisationName,
+    const OrganizationData = {
+        OrganizationsID: organizationsID,
+        Name: form.organizationName,
         Department: "",
         OrganizationType: form.type,
         Others: "",
@@ -51,18 +54,20 @@ export default function FirstTimeSetup() {
         InstallationDate: installationDate,
         ExpiryDate: expiryDate.toISOString(),
         CreatedDate: createdDate,
-      },
     };
-      const result = await sendPost(data);
+    console.log("Organization Data");
+    await AsyncStorage.setItem( "organizationData", JSON.stringify(OrganizationData) );
+    console.log("Organization data saved successfully");
+    router.push("/(tabs)/AdminUser");
 
-    console.log("Setup successful:", result);
-  } catch (error) {
-    console.error("Setup failed:", error);
-  }
-};
+    } 
+    catch (error) {
+      console.error("Failed to save organization:", error);
+    }
+  };
 
   const [form, setForm] = useState<FormData>({
-    organisationName: "",
+    organizationName: "",
     type: "",
     timeZone: "",
     address: "",
@@ -104,7 +109,7 @@ export default function FirstTimeSetup() {
       }, 3000);
       return;
     }
-    router.push("/(tabs)/AdminUser");
+    handleSetup();
   };
 
   const handleBlur = (
@@ -159,13 +164,13 @@ const handleDropdownBlur = (
               label="Organisation Name "
               required={true}
               placeholderText="e.g. NUH Medical Centre,"
-              value={form.organisationName}
+              value={form.organizationName}
               keyboardType="default"
-              onChangeText={(text) => updateField("organisationName", text)}
-              error={errors.organisationName}
+              onChangeText={(text) => updateField("organizationName", text)}
+              error={errors.organizationName}
               activeDropdown={activeDropdown}
               setActiveDropdown={setActiveDropdown}
-              onBlur={() => handleBlur("organisationName", "Organisation name")}
+              onBlur={() => handleBlur("organizationName", "Organisation name")}
             />
             <View style={isMobile ? styles.column : styles.row}>
               <View style={{ flex: 1 }}>
@@ -342,8 +347,6 @@ const handleDropdownBlur = (
         </View>
       )}
     </KeyboardAvoidingView>
-      /*</Animated.View>*/
-
   );
 }
 const styles = StyleSheet.create({
