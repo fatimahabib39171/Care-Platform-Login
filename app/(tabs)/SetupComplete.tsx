@@ -152,15 +152,15 @@ export default function SetupComplete() {
 
                 <View style={styles.dataSection}>
                   <Text style={styles.sectionTitle}>Admin User</Text>
-                  <Text>First Name: {setupData.data.Organization?.FirstName}</Text>
-                  <Text>Last Name: {setupData.data.Organization?.LastName}</Text>
-                  <Text>Designation: {setupData.data.Organization?.Designation}</Text>
-                  <Text>Email: {setupData.data.Organization?.Email}</Text>
-                  <Text>Phone: {setupData.data.Organization?.Phone}</Text>
-                  <Text>User Role: {setupData.data.Organization?.UserRole}</Text>
-                  <Text>User Name: {setupData.data.Organization?.UserName}</Text>
-                  <Text>Password: {setupData.data.Organization?.Password}</Text>
-                  <Text>Created Date: {setupData.data.Organization?.CreatedDate}</Text>
+                  <Text>First Name: {setupData.data.UserMaster?.FirstName}</Text>
+                  <Text>Last Name: {setupData.data.UserMaster?.LastName}</Text>
+                  <Text>Designation: {setupData.data.UserMaster?.Designation}</Text>
+                  <Text>Email: {setupData.data.UserMaster?.Email}</Text>
+                  <Text>Phone: {setupData.data.UserMaster?.Phone}</Text>
+                  <Text>User Role: {setupData.data.UserMaster?.UserRole}</Text>
+                  <Text>User Name: {setupData.data.UserMaster?.UserName}</Text>
+                  <Text>Password: {setupData.data.UserMaster?.Password}</Text>
+                  <Text>Created Date: {setupData.data.UserMaster?.CreatedDate}</Text>
                 </View>
 
                 <View style={styles.dataSection}>
